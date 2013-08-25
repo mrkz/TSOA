@@ -1,3 +1,4 @@
 documentos varios/
 *.project
 *.classpath
+*bin/

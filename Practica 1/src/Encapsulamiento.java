@@ -1,7 +1,21 @@
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Calendar;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 
 /**
  * Taller de Sistemas Operativos Avanzados - 2013B
@@ -13,13 +27,26 @@ public class Encapsulamiento {
 
 	public static void main(String[] args) {
 		
+		/*para el look n feel del S.O.*/
+		try{
+			JFrame.setDefaultLookAndFeelDecorated(true);
+			JDialog.setDefaultLookAndFeelDecorated(true);
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (Exception e)	{
+		 	e.printStackTrace();
+		}
+		/* hasta aquí el look n feel */
+		
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		String line = null;
 		String[] date = null;
 		int d, m, y;
 		MiFecha fecha;
+		Window mainWindow;
 		fecha = new MiFecha();
-		System.out.println(fecha);
+		mainWindow = new Window(fecha);
+		mainWindow.setVisible(true);
 		/* to be replaced for GUI */
 		while(true){
 			System.out.println("Current Date: "+fecha);
@@ -30,7 +57,6 @@ public class Encapsulamiento {
 				d = Integer.parseInt(date[0]);
 				m = Integer.parseInt(date[1]);
 				y = Integer.parseInt(date[2]);
-				System.out.println(d+" "+m+" "+y);
 				fecha.setDate(d, m, y);
 			}
 			catch (NumberFormatException n){}
@@ -145,4 +171,55 @@ class MiFecha{
 		return leapYear;
 	}
 	
+}
+
+class Window extends JFrame implements ActionListener{
+	
+	private static final long serialVersionUID = 1L;
+	private MiFecha date;
+	public static final int WIDTH = 200, HEIGHT = 200;
+	private JPanel currentDatePanel = null, newDatePanel = null;
+	private JPanel inputPanel;
+	private JLabel currentDateString = null;
+	private JTextField dayField, monthField, yearField;
+	private JButton applyDateButton = null;
+	 
+	public Window(MiFecha fecha){
+		super("Practica 1 - TSOA");
+		setSize(WIDTH, HEIGHT);
+		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		date = fecha;
+		currentDatePanel = new JPanel();
+		newDatePanel = new JPanel();
+		newDatePanel.setLayout(new BoxLayout(newDatePanel, BoxLayout.Y_AXIS));
+		dayField = new JTextField(2);
+		monthField = new JTextField(2);
+		yearField = new JTextField(4);
+		inputPanel = new JPanel(new FlowLayout());
+		applyDateButton = new JButton("Apply");
+		currentDatePanel.setBorder(new TitledBorder(new LineBorder(Color.LIGHT_GRAY, 1, true),
+				  				   "Current Date:"));
+		currentDateString = new JLabel(fecha.toString());
+		currentDatePanel.add(currentDateString);
+		newDatePanel.setBorder(new TitledBorder(new LineBorder(Color.LIGHT_GRAY, 1, true),
+							   "New date:"));
+		dayField.setText(date.getDay()+"");
+		monthField.setText(date.getMonth()+"");
+		yearField.setText(date.getYear()+"");
+		inputPanel.add(dayField);
+		inputPanel.add(monthField);
+		inputPanel.add(yearField);
+		newDatePanel.add(inputPanel);
+		newDatePanel.add(applyDateButton);
+		add(currentDatePanel);
+		add(newDatePanel);
+		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent event) {
+		
+		
+	}
 }

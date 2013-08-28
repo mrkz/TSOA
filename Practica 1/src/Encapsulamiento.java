@@ -2,9 +2,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Calendar;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -38,39 +35,20 @@ public class Encapsulamiento {
 		}
 		/* hasta aquí el look n feel */
 		
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		String line = null;
-		String[] date = null;
-		int d, m, y;
 		MiFecha fecha;
 		Window mainWindow;
 		fecha = new MiFecha();
 		mainWindow = new Window(fecha);
 		mainWindow.setVisible(true);
-		/* to be replaced for GUI */
-		while(true){
-			System.out.println("Current Date: "+fecha);
-			System.out.println("New Date (DD/MM/YYYY): ");
-			try {
-				line = in.readLine();
-				date = line.split("/");
-				d = Integer.parseInt(date[0]);
-				m = Integer.parseInt(date[1]);
-				y = Integer.parseInt(date[2]);
-				fecha.setDate(d, m, y);
-			}
-			catch (NumberFormatException n){}
-			catch (ArrayIndexOutOfBoundsException a){}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		/* end of GUI replacement */
 	}
 }
 
 class MiFecha{
 	private int day, month, year;
+	public static final int JANUARY = 1, FEBRUARY = 2, MARCH = 3,
+							APRIL = 4, MAY = 5, JUNE = 6, JULY = 7,
+							AUGUST = 8, SEPTEMBER = 9, OCTOBER = 10,
+							NOVEMBER = 11, DECEMBER = 12;
 	
 	public MiFecha(){
 		/* Set today date */
@@ -128,14 +106,14 @@ class MiFecha{
 		boolean value = false;
 		if(_isValidDay(day) &&  _isValidMonth(month)){
 			switch(month){
-			case 2:
+			case FEBRUARY:
 				if(_isLeapYear(year)){
 					value = (day < 30) ? true : false;
 				}
 				else
 					value = (day < 29) ? true : false;
 				break;
-			case 4: case 6: case 9: case 11:
+			case APRIL: case JUNE: case SEPTEMBER: case NOVEMBER:
 				value = (day < 31) ? true : false;
 				break;
 			/* it's a month with 31 days */
@@ -198,12 +176,13 @@ class Window extends JFrame implements ActionListener{
 		yearField = new JTextField(4);
 		inputPanel = new JPanel(new FlowLayout());
 		applyDateButton = new JButton("Apply");
+		applyDateButton.addActionListener(this);
 		currentDatePanel.setBorder(new TitledBorder(new LineBorder(Color.LIGHT_GRAY, 1, true),
 				  				   "Current Date:"));
 		currentDateString = new JLabel(fecha.toString());
 		currentDatePanel.add(currentDateString);
 		newDatePanel.setBorder(new TitledBorder(new LineBorder(Color.LIGHT_GRAY, 1, true),
-							   "New date:"));
+							   "New date(DD/MM/YYY):"));
 		dayField.setText(date.getDay()+"");
 		monthField.setText(date.getMonth()+"");
 		yearField.setText(date.getYear()+"");
@@ -216,10 +195,32 @@ class Window extends JFrame implements ActionListener{
 		add(newDatePanel);
 		
 	}
+	
+	public void resetFields(){
+		dayField.setText("");
+		monthField.setText("");
+		yearField.setText("");
+		dayField.requestFocus();
+	}
+	
+	public void updateCurrentDate(){
+		currentDateString.setText(date.toString());
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		
+		int newDay, newMonth, newYear;
+		try{
+			newDay = Integer.parseInt(dayField.getText());
+			newMonth = Integer.parseInt(monthField.getText());
+			newYear = Integer.parseInt(yearField.getText());
+			if(date.setDate(newDay, newMonth, newYear)){
+				updateCurrentDate();
+			}
+			
+		}
+		catch (NumberFormatException e){}
+		resetFields();
 		
 	}
 }

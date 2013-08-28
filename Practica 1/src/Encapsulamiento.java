@@ -74,11 +74,15 @@ class MiFecha{
 	}
 	
 	public void setDay(int newDay){
-		day = newDay;
+		if(isValidDate(newDay, month, year)){
+			day = newDay;
+		}
 	}
 	
 	public void setMonth(int newMonth){
-		month = newMonth;
+		if(isValidDate(day, newMonth, year)){
+			month = newMonth;
+		}
 	}
 	
 	public void setYear(int newYear){

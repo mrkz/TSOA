@@ -92,9 +92,9 @@ class MiFecha{
 	public boolean setDate(int newDay, int newMonth, int newYear){
 		boolean dateChanged = false;
 		if (isValidDate(newDay, newMonth, newYear)){
-			setDay(newDay);
-			setMonth(newMonth);
 			setYear(newYear);
+			setMonth(newMonth);
+			setDay(newDay);
 			dateChanged = true;
 		}
 		return dateChanged;

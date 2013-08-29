@@ -7,14 +7,18 @@ public class Conversor {
 	
 	public Conversor(){
 	}
+
+	public void printFormat(String s, int pipe){
+		System.out.print(s);
+		System.out.print((pipe == 0 ) ? (" | ") : (""));
+	}
 	
 	public void printBinary(byte a){
 		System.out.print("| ");
 		int tmp = 0x8;
 		for	(int i = 0, pipe = 1; i < Byte.SIZE; i++, pipe++){
-			System.out.print(((tmp&a) == 0) ? "0" : "1");
-			System.out.print((pipe % 8 == 0) ? (" | ") : (""));
-			tmp = tmp >>> 1;
+			printFormat(((tmp&a) == 0) ? "0" : "1", pipe % 8);
+			tmp >>>= 1;
 		}
 		System.out.println();
 	}
@@ -23,9 +27,8 @@ public class Conversor {
 		System.out.print("| ");
 		int tmp = 0x800;
 		for	(int i = 0, pipe = 1; i < Short.SIZE; i++, pipe++){
-			System.out.print(((tmp&a) == 0) ? "0" : "1");
-			System.out.print((pipe % 8 == 0) ? (" | ") : (""));
-			tmp = tmp >>> 1;
+			printFormat(((tmp&a) == 0) ? "0" : "1", pipe % 8);
+			tmp >>>= 1;
 		}
 		System.out.println();
 	}
@@ -34,9 +37,8 @@ public class Conversor {
 		System.out.print("| ");
 		int tmp = Integer.MIN_VALUE;
 		for	(int i = 0, pipe = 1; i < Integer.SIZE; i++, pipe++){
-			System.out.print(((tmp&a) == 0) ? "0" : "1");
-			System.out.print((pipe % 8 == 0) ? (" | ") : (""));
-			tmp = tmp >>> 1;
+			printFormat(((tmp&a) == 0) ? "0" : "1", pipe % 8);
+			tmp >>>= 1;
 		}
 		System.out.println();
 	}
@@ -45,8 +47,7 @@ public class Conversor {
 		System.out.print("| ");
 		long tmp = Long.MIN_VALUE;
 		for	(int i = 0, pipe = 1; i < Long.SIZE; i++, pipe++){
-			System.out.print(((tmp&a) == 0) ? "0" : "1");
-			System.out.print((pipe % 8 == 0) ? (" | ") : (""));
+			printFormat(((tmp&a) == 0) ? "0" : "1", pipe % 8);
 			tmp = tmp >>> 1;
 		}
 		System.out.println();

@@ -15,7 +15,7 @@ public class Conversor {
 	
 	public void printBinary(byte a){
 		System.out.print("| ");
-		int tmp = 0x8;
+		int tmp = 0x80;
 		for	(int i = 0, pipe = 1; i < Byte.SIZE; i++, pipe++){
 			printFormat(((tmp&a) == 0) ? "0" : "1", pipe % 8);
 			tmp >>>= 1;
@@ -25,7 +25,7 @@ public class Conversor {
 	
 	public void printBinary(short a){
 		System.out.print("| ");
-		int tmp = 0x800;
+		int tmp = 0x8000;
 		for	(int i = 0, pipe = 1; i < Short.SIZE; i++, pipe++){
 			printFormat(((tmp&a) == 0) ? "0" : "1", pipe % 8);
 			tmp >>>= 1;
@@ -55,12 +55,12 @@ public class Conversor {
 
 	public static void main(String[] args) {
 		
-		byte  b = 0x8;
-		short s = 0x8;
+		byte  b = -128; // same binary representation for int b = 0x80;
+		short s = 0x80;
 		
 	 	Conversor converter;
 	 	converter = new Conversor();
-	 	
+
 	 	converter.printBinary(1);
 	 	converter.printBinary(2);
 	 	converter.printBinary(128);

@@ -1,3 +1,8 @@
+/**
+ * Taller de Sistemas Operativos Avanzados - 2013B
+ * Simental Magaña Marcos Eleno Joaquín.
+ * Sección D04 - Tarea 8
+ */
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

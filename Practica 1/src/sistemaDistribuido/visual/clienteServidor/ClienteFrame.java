@@ -51,14 +51,15 @@ public class ClienteFrame extends ProcesoFrame{
 	}
 
 	class ManejadorSolicitud implements ActionListener{
+		
 		public void actionPerformed(ActionEvent e) {
 			String com=e.getActionCommand();
 			if (com.equals("Solicitar")){
 				botonSolicitud.setEnabled(false);
 				com=codigosOperacion.getSelectedItem();
-				imprimeln("Solicitud a enviar: "+com);
-				imprimeln("Mensaje a enviar: "+campoMensaje.getText());
-				//proc.
+				//imprimeln("Solicitud a enviar: "+com);
+				//imprimeln("Mensaje a enviar: "+campoMensaje.getText());
+				proc.setData((short)codigosOperacion.getSelectedIndex(), campoMensaje.getText());
 				Nucleo.reanudarProceso(proc);
 			}
 		}

@@ -1,4 +1,11 @@
 package sistemaDistribuido.sistema.clienteServidor.modoUsuario;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import sistemaDistribuido.sistema.clienteServidor.modoMonitor.Nucleo;
 import sistemaDistribuido.sistema.clienteServidor.modoUsuario.Proceso;
 import sistemaDistribuido.util.Escribano;
@@ -24,7 +31,14 @@ public class ProcesoServidor extends Proceso{
 	 * salida:	boolean, true si operación exitosa, false en caso contrario
 	 */
 	private boolean createFile(String fileName){
-		return true;
+		boolean success = false;
+		File newFile = new File(fileName);
+		if(!newFile.exists()){
+			try {
+				success = newFile.createNewFile();
+			} catch (IOException e) {}
+		}
+		return success;
 	}
 	
 	/**
@@ -34,7 +48,12 @@ public class ProcesoServidor extends Proceso{
 	 * salida:	boolean, true si operación exitosa, false en caso contrario
 	 */
 	private boolean deleteFile(String fileName){
-		return true;
+		boolean success = false;
+		File newFile = new File(fileName);
+		try{
+			success = newFile.delete();
+		} catch (SecurityException e) {}
+		return success;
 	}
 	
 	/**
@@ -46,7 +65,18 @@ public class ProcesoServidor extends Proceso{
 	 * salida:	boolean, true si operación exitosa, false en caso contrario
 	 */
 	private boolean writeFile(String fileName, String lineToWrite){
-		return true;
+		boolean success = false;
+		BufferedWriter br;
+		File newFile = new File(fileName);
+		try {
+			if(newFile.exists()){
+				br = new BufferedWriter(new FileWriter(newFile));
+				br.write(lineToWrite);
+				br.close();
+				success = true;
+			}
+		} catch (IOException e) {}
+		return success;
 	}
 	
 	/**
@@ -56,7 +86,17 @@ public class ProcesoServidor extends Proceso{
 	 * salida:	String:	Cadena de texto leída desde el archivo
 	 */
 	private String readFile(String fileName){
-		return "leido";
+		String success = "Error al leer desde archivo '"+fileName+"'";
+		BufferedReader br;
+		File newFile = new File(fileName);
+		try {
+			if(newFile.exists()){
+				br = new BufferedReader(new FileReader(newFile));
+				success = br.readLine();
+				br.close();
+			}
+		} catch (IOException e) {}
+		return success;
 	}
 	
 	/**

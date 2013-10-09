@@ -219,6 +219,7 @@ public class ProcesoServidor extends Proceso{
 			Nucleo.receive(dameID(),solServidor);
 			imprimeln("Procesando petición recibida del cliente");
 			respServidor = procesaLlamada(solServidor);
+			imprimeln("Generando mensaje a ser enviado, llenando los campos necesarios");
 			respServidor = packageData(respServidor);
 			Pausador.pausa(1000);  //sin esta línea es posible que Servidor solicite send antes que Cliente solicite receive
 			imprimeln("Señalamiento al núcleo para envío de mensaje");

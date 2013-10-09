@@ -1,5 +1,4 @@
 package sistemaDistribuido.sistema.clienteServidor.modoUsuario;
-
 import sistemaDistribuido.sistema.clienteServidor.modoMonitor.Nucleo;
 import sistemaDistribuido.sistema.clienteServidor.modoUsuario.Proceso;
 import sistemaDistribuido.util.Escribano;
@@ -18,22 +17,56 @@ public class ProcesoServidor extends Proceso{
 		start();
 	}
 	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Método para crear un archivo
+	 * entrada:	String,	 Nombre del archivo a crear
+	 * salida:	boolean, true si operación exitosa, false en caso contrario
+	 */
 	private boolean createFile(String fileName){
 		return true;
 	}
 	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Método para borrar un archivo
+	 * entrada:	String,	 Nombre del archivo a borrar
+	 * salida:	boolean, true si operación exitosa, false en caso contrario
+	 */
 	private boolean deleteFile(String fileName){
 		return true;
 	}
 	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Método para escribir a un archivo
+	 * entrada:	(String, String)
+	 * 	String:	Nombre del archivo en el que se va a escribir
+	 *  String:	Cadena de texto a escribir en el archivo
+	 * salida:	boolean, true si operación exitosa, false en caso contrario
+	 */
 	private boolean writeFile(String fileName, String lineToWrite){
 		return true;
 	}
 	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Método para leer desde un archivo
+	 * entrada:	String:	Nombre del archivo a leer
+	 * salida:	String:	Cadena de texto leída desde el archivo
+	 */
 	private String readFile(String fileName){
 		return "leido";
 	}
 	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Método para convertir un short a un arreglo de bytes
+	 * entrada: (short, String[])
+	 *     short: 	operación a realizar por el servidor
+	 *     String[]	arreglo de argumentos para la operación
+	 * salida:	(String) respuesta de la operación realizada
+	 */
 	private String HacerOperacion(short operacion, String[] args){
 
 		String fileName = "default.txt",
@@ -55,8 +88,8 @@ public class ProcesoServidor extends Proceso{
 			imprimeln("Se solicitó servicio 'Crear' con el nombre de archivo: "+fileName);
 			break;
 		case 1:
-			log+= (deleteFile(fileName)) ? (fileName +"eliminado") :
-										   (fileName +"no eliminado");
+			log+= (deleteFile(fileName)) ? (fileName +" eliminado") :
+										   (fileName +" no eliminado");
 			imprimeln("Se solicitó servicio 'Eliminar' con el nombre de archivo: "+fileName);
 			break;
 		case 2:
@@ -74,6 +107,12 @@ public class ProcesoServidor extends Proceso{
 		return log;
 	}
 	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Método para desempaquetar y procesar la llamada requerida por el cliente 
+	 * entrada:	byte[]	paquete recibido del cliente
+	 * salida:	byte[]	respuesta de la llamada realizada por el servidor
+	 */
 	private byte[] procesaLlamada(byte[] arrayBytes){
 		short codop, dataLength;
 		String message = "";
@@ -101,6 +140,32 @@ public class ProcesoServidor extends Proceso{
 		System.out.println(message);
 		return message.getBytes();
 	}
+	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Método para empaquetar respuesa que dará el servidor
+	 * entrada:	byte[]	arreglo de bytes de la respuesta que el servidor entregará [data]
+	 * salida:	byte[]  paquete de respuesta [OFFSET dataTAM data]
+	 */
+	private byte[] packageData(byte[] data){
+		short dataTam = (short) data.length;
+		byte[] byteDataTam = toByte(dataTam);
+		byte[] newPackage = new byte[OFFSET+BYTES_IN_SHORT+dataTam];
+		/* FIXME: inset dir1, dir2 */
+		/* insert OFFSET (8 bytes)*/
+		for(int i = 0; i < OFFSET; i++){
+			newPackage[i] = 0;
+		}
+		/* insert dataTam (2 bytes) */
+		for(int i = OFFSET-1, j = 0; j < byteDataTam.length; j++, i++){
+			newPackage[i] = byteDataTam[j];
+		}
+		/* insert data (data.length bytes) */
+		for(int i = OFFSET+byteDataTam.length-1, j = 0; j < data.length; i++, j++){
+			newPackage[i] = data[j];
+		}
+		return newPackage;
+	}
 
 	/**
 	 * 
@@ -114,11 +179,7 @@ public class ProcesoServidor extends Proceso{
 			Nucleo.receive(dameID(),solServidor);
 			imprimeln("Procesando petición recibida del cliente");
 			respServidor = procesaLlamada(solServidor);
-			//dato=solServidor[0];//desempaqueta
-			// se hace el manejo de datos
-			//imprimeln("el cliente envió un "+dato);
-			//respServidor=new byte[20]; //1024
-			//respServidor[0]=(byte)(dato*dato);
+			respServidor = packageData(respServidor);
 			Pausador.pausa(1000);  //sin esta línea es posible que Servidor solicite send antes que Cliente solicite receive
 			imprimeln("Señalamiento al núcleo para envío de mensaje");
 			Nucleo.send(0,respServidor);

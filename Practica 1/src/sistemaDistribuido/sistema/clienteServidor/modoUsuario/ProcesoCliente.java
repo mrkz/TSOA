@@ -49,6 +49,37 @@ public class ProcesoCliente extends Proceso{
 		return solCliente;
 	}
 	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Método para desempacar el arreglo de bytes recibidas.
+	 * entrada:	byte[],	paquete recibido desde el servidor
+	 * salida:	String,	datos recibidos
+	 */
+	private String unpackageData(byte[] data){
+		String dataStr = "";
+		short dataTam;
+		byte[] byteDataTam = new byte[BYTES_IN_SHORT],
+			   byteData = new byte[data.length - (BYTES_IN_SHORT - OFFSET)];
+		/* extract dataTam (short) */
+		for(int i = OFFSET-1, j = 0; j < byteDataTam.length; j++, i++){
+			byteDataTam[j] = data[i];
+		}
+		dataTam = ToShort(byteDataTam);
+		for(int i = OFFSET + byteDataTam.length -1, j = 0; j < dataTam; i++, j++){
+			byteData[j] = data[i];
+		}
+		dataStr = new String(byteData);
+		return dataStr;
+	}
+	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Método para establecer valores de código de operación y datos del proceso
+	 * entrada:	short, String
+	 * 	short: código de operación
+	 * 	String: datos correpondientes al proceso (campo TextField de ventana procesoCliente)
+	 * salida:	void
+	 */
 	public void setData(short codop, String data){
 		this.codop = codop;
 		this.data  = data;
@@ -68,14 +99,13 @@ public class ProcesoCliente extends Proceso{
 		imprimeln("Generando mensaje a ser enviado, llenando los campos necesarios");
 		byte[] solCliente = packageData();
 		byte[] respCliente=new byte[MAX_BUFFER]; //1024
-		byte dato;
+		String dato;
 		imprimeln("Señalamiento al núcleo para envío de mensaje");
 		Nucleo.send(248,solCliente); //esta no se mueve
 		imprimeln("Invocando a Receive.");
 		Nucleo.receive(dameID(),respCliente); // esta tampoco
 		imprimeln("Procesando respuesta recibida del servidor");
-		/* TODO: procesar respuesta del servidor */
-		dato=respCliente[0];
+		dato=unpackageData(respCliente);
 		imprimeln("Respuesta del servidor: "+dato);
 				// aquí termina el codigo
 	}

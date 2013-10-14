@@ -147,7 +147,7 @@ class Receiver implements Runnable{
 	private String formatMessage(DatagramPacket incoming){
 		String formattedString = ""; 
 		formattedString+="IP emisora: "+incoming.getAddress().getHostAddress()+": "+
-						 new String(incoming.getData());
+						 new String(incoming.getData(),0,incoming.getLength());
 		
 		return formattedString;
 	}

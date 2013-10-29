@@ -1,5 +1,7 @@
 package sistemaDistribuido.sistema.clienteServidor.modoMonitor;
 
+import java.util.Hashtable;
+
 import sistemaDistribuido.sistema.clienteServidor.modoMonitor.MicroNucleoBase;
 
 /**
@@ -7,11 +9,21 @@ import sistemaDistribuido.sistema.clienteServidor.modoMonitor.MicroNucleoBase;
  */
 public final class MicroNucleo extends MicroNucleoBase{
 	private static MicroNucleo nucleo=new MicroNucleo();
+	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Para práctica 2
+	 * Atributo Table agregado
+	 */
+	private Hashtable<Integer, InfoProceso> tablaEmision;
 
 	/**
-	 * 
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Para práctica 2
+	 * Se agrega inicialización de tablaEmision
 	 */
 	private MicroNucleo(){
+		tablaEmision = new Hashtable<Integer, InfoProceso>();
 	}
 
 	/**
@@ -51,13 +63,15 @@ public final class MicroNucleo extends MicroNucleoBase{
 	protected void sendVerdadero(int dest,byte[] message){
 		/* comentar linea de send falso*/
 		sendFalso(dest,message);
-		imprimeln("El proceso invocante es el "+super.dameIdProceso());
+		message = fillAddress(dest, message);
+		//imprimeln("El proceso invocante es el "+super.dameIdProceso());
 		
-		//lo siguiente aplica para la pr�ctica #2
-		/*ParMaquinaProceso pmp=dameDestinatarioDesdeInterfaz();
+		//lo siguiente aplica para la práctica #2
+		ParMaquinaProceso pmp=dameDestinatarioDesdeInterfaz();
+		System.out.println("Existe proceso en tabla de emisión? :"+tablaEmision.containsKey(pmp.dameID()));
 		imprimeln("Enviando mensaje a IP="+pmp.dameIP()+" ID="+pmp.dameID());
-		suspenderProceso();   //esta invocacion depende de si se requiere bloquear al hilo de control invocador
-		*/ 
+		//suspenderProceso();   //esta invocacion depende de si se requiere bloquear al hilo de control invocador
+		
 	}
 
 	/**
@@ -66,7 +80,7 @@ public final class MicroNucleo extends MicroNucleoBase{
 	protected void receiveVerdadero(int addr,byte[] message){
 		/* se comenta receiveFalso */
 		receiveFalso(addr,message);
-		//el siguiente aplica para la pr�ctica #2
+		//el siguiente aplica para la práctica #2
 		//suspenderProceso();
 	}
 
@@ -94,8 +108,8 @@ public final class MicroNucleo extends MicroNucleoBase{
 	public void run(){
 
 		while(seguirEsperandoDatagramas()){
-			/* Lo siguiente es reemplazable en la pr�ctica #2,
-			 * sin esto, en pr�ctica #1, seg�n el JRE, puede incrementar el uso de CPU
+			/* Lo siguiente es reemplazable en la práctica #2,
+			 * sin esto, en práctica #1, según el JRE, puede incrementar el uso de CPU
 			 */ 
 			try{
 				/* este sleep se va o se reduce a 5K o 1K */
@@ -104,5 +118,71 @@ public final class MicroNucleo extends MicroNucleoBase{
 				System.out.println("InterruptedException");
 			}
 		}
+	}
+	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Para práctica 2
+	 * Se agrega Método para llenar campos proceso Origen y 
+	 * proceso destino
+	 */
+	private byte[] fillAddress(int dest, byte[] message){
+		byte [] filled = message,
+				origin = intToByteArray(super.dameIdProceso()),
+				destiny= intToByteArray(dest); 
+		for(int i = 0; i < origin.length; i++){
+			filled[i] = origin[i];
+		}
+		for(int i = origin.length, j = 0; i < (destiny.length + origin.length); i++ , j++){
+			filled[i] = destiny[j];
+		}
+		
+		return filled;
+	}
+	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Para práctica 2
+	 * Se agrega Método para convertir entero a byte[]
+	 */
+	private byte[] intToByteArray(int data){
+		byte[] byteArray = new byte[4];
+		/* saved from most to less significant */
+		for(int i = 3; i >= 0; i--){
+			byteArray[i] = (byte) data; 
+			data >>= 8;
+		}
+		return byteArray;
+	}
+}
+
+/**
+ * Edited: Simental Magaña Marcos Eleno Joaquín
+ * Para práctica 2
+ * Se agrega Clase InfoProceso
+ */
+class InfoProceso{
+	private int idProceso;
+	private String ipProceso;
+	
+	public InfoProceso(int id, String ip){
+		setId(id);
+		setIp(ip);
+	}
+	
+	private void setId(int newId){
+		idProceso = newId;
+	}
+	
+	private void setIp(String newIp){
+		ipProceso = newIp;
+	}
+	
+	public int getId(){
+		return idProceso;
+	}
+	
+	public String getIp(){
+		return ipProceso;
 	}
 }

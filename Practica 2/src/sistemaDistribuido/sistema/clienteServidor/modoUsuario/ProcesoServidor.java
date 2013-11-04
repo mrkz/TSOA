@@ -160,24 +160,22 @@ public class ProcesoServidor extends Proceso{
 			   byteCodop 	= new byte[BYTES_IN_SHORT],
 			   byteDataTam	= new byte[BYTES_IN_SHORT];
 		
-		/* FIXME: extract dir1, dir2 (now OFFSET)*/
 		/* extract codop */
-		for(int i = OFFSET-1, j = 0; j < byteCodop.length; j++, i++){
+		for(int i = OFFSET, j = 0; j < byteCodop.length; j++, i++){
 			byteCodop[j] = arrayBytes[i];
 		}
-		/* extract data length */
-		for(int i = OFFSET+byteCodop.length-1, j=0; j < byteDataTam.length; j++, i++){
+		/* extract data length (short)*/
+		for(int i = OFFSET+BYTES_IN_SHORT, j = 0 ; j < BYTES_IN_SHORT; i++, j++){
 			byteDataTam[j] = arrayBytes[i];
 		}
 		codop 		= ToShort(byteCodop);
 		dataLength	= ToShort(byteDataTam);
 		data = new byte[dataLength];
 		/* get data */
-		for(int i = OFFSET+byteCodop.length+byteDataTam.length-1, j = 0; j < dataLength; j++, i++){
+		for(int i = OFFSET+(BYTES_IN_SHORT*2), j = 0; j < dataLength; j++, i++){
 			data[j] = arrayBytes[i];
 		}
 		message = (HacerOperacion(codop, (new String(data)).split(",")));
-		System.out.println(message);
 		return message.getBytes();
 	}
 	
@@ -190,21 +188,50 @@ public class ProcesoServidor extends Proceso{
 	private byte[] packageData(byte[] data){
 		short dataTam = (short) data.length;
 		byte[] byteDataTam = toByte(dataTam);
-		byte[] newPackage = new byte[OFFSET+BYTES_IN_SHORT+dataTam];
-		/* FIXME: inset dir1, dir2 */
-		/* insert OFFSET (8 bytes)*/
+		byte[] newPackage = new byte[OFFSET+(BYTES_IN_SHORT*2)+dataTam];
+
 		for(int i = 0; i < OFFSET; i++){
 			newPackage[i] = 0;
 		}
-		/* insert dataTam (2 bytes) */
-		for(int i = OFFSET-1, j = 0; j < byteDataTam.length; j++, i++){
+		/* insert dataTam (short) */
+		for(int i = OFFSET+BYTES_IN_SHORT, j = 0; j < byteDataTam.length; i++,j++){
 			newPackage[i] = byteDataTam[j];
 		}
 		/* insert data (data.length bytes) */
-		for(int i = OFFSET+byteDataTam.length-1, j = 0; j < data.length; i++, j++){
+		for(int i = OFFSET+(BYTES_IN_SHORT*2), j = 0; j < data.length; i++, j++){
 			newPackage[i] = data[j];
 		}
+		System.out.print("ProcesServidor.java: Paquete a enviar por el servidor: ");
+		for(int i = 0; i < newPackage.length; i++){
+			System.out.print("["+newPackage[i]+"]");
+		}
 		return newPackage;
+	}
+	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Para práctica 2
+	 * Se agrega método para obtener dirección de origen de mensaje
+	 * para regresar respuesta del servidor
+	 */
+	private int getOrigin(byte[] solServidor){
+		byte[] origin = new byte[4];
+		System.arraycopy(solServidor, 0, origin, 0, 4);
+		return bytesToInt(origin);
+	}
+	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Para práctica 2
+	 * Se agrega método para convertir direccion de origen a entero
+	 */
+	private int bytesToInt(byte[] array){
+		int bytesValue = 0x0;
+		bytesValue = (int)( (array[3]       & 0x000000FF) | 
+							(array[2] << 8  & 0x0000FF00) | 
+							(array[1] << 16 & 0x00FF0000) | 
+							(array[0] << 24 & 0xFF000000));
+		return bytesValue;
 	}
 
 	/**
@@ -214,6 +241,7 @@ public class ProcesoServidor extends Proceso{
 		imprimeln("Inicio de Proceso servidor.");
 		byte[] solServidor=new byte[MAX_BUFFER];
 		byte[] respServidor; //1024
+		int origin;
 		while(continuar()){
 			imprimeln("Invocando a Receive.");
 			Nucleo.receive(dameID(),solServidor);
@@ -223,7 +251,9 @@ public class ProcesoServidor extends Proceso{
 			respServidor = packageData(respServidor);
 			Pausador.pausa(1000);  //sin esta línea es posible que Servidor solicite send antes que Cliente solicite receive
 			imprimeln("Señalamiento al núcleo para envío de mensaje");
-			Nucleo.send(0,respServidor);
+			origin = getOrigin(solServidor);
+			System.out.println("El origen del paquete es: "+origin);
+			Nucleo.send(origin,respServidor);
 		}
 	}
 }

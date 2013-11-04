@@ -1,8 +1,13 @@
 package sistemaDistribuido.sistema.clienteServidor.modoMonitor;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Hashtable;
 
 import sistemaDistribuido.sistema.clienteServidor.modoMonitor.MicroNucleoBase;
+import sistemaDistribuido.sistema.clienteServidor.modoUsuario.Proceso;
 
 /**
  * 
@@ -13,9 +18,13 @@ public final class MicroNucleo extends MicroNucleoBase{
 	/**
 	 * Edited: Simental Magaña Marcos Eleno Joaquín
 	 * Para práctica 2
-	 * Atributo Table agregado
+	 * Atributo tablaEmision agregado
+	 * Atributo tablaRecepcion agregado
+	 * Atributo BYTES_IN_SHORT agregado
 	 */
 	private Hashtable<Integer, InfoProceso> tablaEmision;
+	private Hashtable<Integer, byte[]> tablaRecepcion;
+	protected static final int BYTES_IN_SHORT = 2;
 
 	/**
 	 * Edited: Simental Magaña Marcos Eleno Joaquín
@@ -24,6 +33,7 @@ public final class MicroNucleo extends MicroNucleoBase{
 	 */
 	private MicroNucleo(){
 		tablaEmision = new Hashtable<Integer, InfoProceso>();
+		tablaRecepcion = new Hashtable<Integer, byte[]>();
 	}
 
 	/**
@@ -58,30 +68,44 @@ public final class MicroNucleo extends MicroNucleoBase{
 	}
 
 	/**
-	 * 
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Para práctica 2
+	 * Se modifica el funcionamiento de sendVerdadero,
+	 * envía mensaje a través de la red
 	 */
 	protected void sendVerdadero(int dest,byte[] message){
-		/* comentar linea de send falso*/
-		sendFalso(dest,message);
-		message = fillAddress(dest, message);
-		//imprimeln("El proceso invocante es el "+super.dameIdProceso());
 		
-		//lo siguiente aplica para la práctica #2
 		ParMaquinaProceso pmp=dameDestinatarioDesdeInterfaz();
-		System.out.println("Existe proceso en tabla de emisión? :"+tablaEmision.containsKey(pmp.dameID()));
-		imprimeln("Enviando mensaje a IP="+pmp.dameIP()+" ID="+pmp.dameID());
+		if(tablaEmision.containsKey(dest)){
+			System.out.println("Tomando datos desde tablaEmision");
+			/* se toman desde tabla */
+			message = fillAddress(tablaEmision.get(new Integer(dest)).getId(),
+												   message);
+			sendDatagamPacket(tablaEmision.get(new Integer(dest)).getIp(),
+											   message);
+			imprimeln("Enviando mensaje a IP="+tablaEmision.get(new Integer(dest)).getIp()+" ID="+tablaEmision.get(new Integer(dest)));
+		}
+		else{
+			/* se toman desde la interfaz */
+			System.out.println("Tomando datos desde Interfaz");
+			message = fillAddress(pmp.dameID(), message);
+			sendDatagamPacket(pmp.dameIP(), message);
+			imprimeln("Enviando mensaje a IP="+pmp.dameIP()+" ID="+pmp.dameID());
+		}
 		//suspenderProceso();   //esta invocacion depende de si se requiere bloquear al hilo de control invocador
 		
 	}
 
 	/**
-	 * 
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Para práctica 2
+	 * Se modifica el funcionamiento de receiveVerdadero,
+	 * se registra id del proceso convocante y arreglo de
+	 * bytes donde se almacenan datos
 	 */
 	protected void receiveVerdadero(int addr,byte[] message){
-		/* se comenta receiveFalso */
-		receiveFalso(addr,message);
-		//el siguiente aplica para la práctica #2
-		//suspenderProceso();
+		tablaRecepcion.put(new Integer(addr), message);
+		suspenderProceso();
 	}
 
 	/**
@@ -103,22 +127,84 @@ public final class MicroNucleo extends MicroNucleoBase{
 	}
 
 	/**
-	 * 
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Para práctica 2
+	 * Se modifica el funcionamiento de run
 	 */
 	public void run(){
-
+		byte[]  message = new byte[1024],
+				origin  = new byte[4],
+				destiny = new byte[4],
+				data;
+		String ipSource;
+		Proceso destinyProcess;
+		DatagramPacket dp = new DatagramPacket(message, message.length);
 		while(seguirEsperandoDatagramas()){
-			/* Lo siguiente es reemplazable en la práctica #2,
-			 * sin esto, en práctica #1, según el JRE, puede incrementar el uso de CPU
-			 */ 
-			try{
-				/* este sleep se va o se reduce a 5K o 1K */
-				sleep(60000);
-			}catch(InterruptedException e){
-				System.out.println("InterruptedException");
+			try {
+				dameSocketRecepcion().receive(dp);
+				sleep(1000);
+				System.arraycopy(dp.getData(), 0, origin , 0, 4); 
+				System.arraycopy(dp.getData(), 4, destiny, 0, 4);
+				ipSource = dp.getAddress().getHostAddress();
+				
+				tablaEmision.put(new Integer(bytesToInt(origin)), 
+								 new InfoProceso(bytesToInt(origin), ipSource));
+				destinyProcess = dameProcesoLocal(bytesToInt(destiny));
+				if(destinyProcess == null){
+					byte[] error = new byte[BYTES_IN_SHORT];
+					/* se manda AU */
+					data = dp.getData();
+					error = toByte((short)-1);
+					for(int i = 10, j = 0 ; j < +BYTES_IN_SHORT; i++, j++){
+						data[i] = error[j];
+					}
+					// descomentar la linea send, crea un bucle infinito enviando mensajes al proceso 0 (no existe)
+					send(bytesToInt(origin), data);
+				}
+				else{
+					if (tablaRecepcion.containsKey(bytesToInt(destiny))){
+						data = tablaRecepcion.get(bytesToInt(destiny));
+						System.arraycopy(dp.getData(), 0, data, 0,
+										 dp.getData().length);
+						tablaRecepcion.remove(bytesToInt(destiny));
+						reanudarProceso(destinyProcess);
+					}
+					else{
+						System.out.println("ERROR: This should not appear, tablaRecepcion doesn't contain "
+										   +bytesToInt(destiny));
+						/* TODO: Enviar paquete con mensaje TA (Try Again) */
+					}
+				}
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}
+
+/**************************************************************/
+/***			Métodos agregados para práctica 2			***/
+/**************************************************************/
+
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Para práctica 2
+	 * Se agrega Método para enviar mensaje por la red
+	 */
+	private void sendDatagamPacket(String ip, byte[] message){
+		DatagramPacket dp;
+		try {
+			dp = new DatagramPacket(message, message.length,
+									InetAddress.getByName(ip),damePuertoRecepcion());
+			dameSocketEmision().send(dp);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 	/**
 	 * Edited: Simental Magaña Marcos Eleno Joaquín
@@ -130,13 +216,15 @@ public final class MicroNucleo extends MicroNucleoBase{
 		byte [] filled = message,
 				origin = intToByteArray(super.dameIdProceso()),
 				destiny= intToByteArray(dest); 
+		System.out.println("MicroNucleo.java: Llenando cabecera de mensaje: ");
+		System.out.println("   Origen: "+super.dameIdProceso());
+		System.out.println("   Destino: "+dest);
 		for(int i = 0; i < origin.length; i++){
 			filled[i] = origin[i];
 		}
 		for(int i = origin.length, j = 0; i < (destiny.length + origin.length); i++ , j++){
 			filled[i] = destiny[j];
 		}
-		
 		return filled;
 	}
 	
@@ -154,12 +242,54 @@ public final class MicroNucleo extends MicroNucleoBase{
 		}
 		return byteArray;
 	}
+	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Para práctica 2
+	 * Se agrega Método para convertir byte[] a entero
+	 */
+	private int bytesToInt(byte[] array){
+		int bytesValue = 0x0;
+		bytesValue = (int)( (array[3]       & 0x000000FF) | 
+							(array[2] << 8  & 0x0000FF00) | 
+							(array[1] << 16 & 0x00FF0000) | 
+							(array[0] << 24 & 0xFF000000));
+		return bytesValue;
+	}
+	
+	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * para práctica 2
+	 * Se agrega Método para convertir byte[] a short
+	 */
+	protected short ToShort(byte[] array){
+		short bytesValue = 0x0;
+		bytesValue = (short)((array[1]      & 0x00FF) | 
+							 (array[0] << 8 & 0xFF00));
+		return bytesValue;
+	}
+	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * para práctica 2
+	 * Se agrega Método para convertir short a byte[]
+	 */
+	protected byte[] toByte(short value){
+		byte[] byteArray = new byte[BYTES_IN_SHORT];
+		/* saved from most to less significant */
+		byteArray[0] = (byte) (value >> 8);
+		byteArray[1] = (byte) value;
+		return byteArray;
+	}
+	
 }
 
 /**
  * Edited: Simental Magaña Marcos Eleno Joaquín
  * Para práctica 2
- * Se agrega Clase InfoProceso
+ * Se agrega Clase InfoProceso para usdo de esta en
+ * tablaEmision
  */
 class InfoProceso{
 	private int idProceso;

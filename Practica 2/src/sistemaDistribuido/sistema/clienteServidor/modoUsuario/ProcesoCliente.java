@@ -22,7 +22,7 @@ public class ProcesoCliente extends Proceso{
 	 * entrada: vacía
 	 * salida: byte[]
 	 * Estructura del paquete:
-	 * 		OFFSET(p/practica 2) | short | short	| byte* (cero o más bytes)
+	 * 		OFFSET               | short | short	| byte* (cero o más bytes)
 	 * 			DIRS			 | CODOP | DATA_TAM	| DATA
 	 * [0][0][0][0] [0][0][0][0]  [0][0]   [0][0]     [...]
 	 */
@@ -35,15 +35,15 @@ public class ProcesoCliente extends Proceso{
 		byte [] solCliente = new byte[OFFSET + byteCodop.length + byteDataTam.length +byteData.length];
 		/* FIXME: insert dir1, dir2 (now OFFSET) */
 		/* insert codop */
-		for(int i = OFFSET-1, j = 0; j < byteCodop.length; j++, i++){
+		for(int i = OFFSET, j = 0; j < byteCodop.length; j++, i++){
 			solCliente[i] = byteCodop[j];
 		}
 		/* insert data length */
-		for(int i = OFFSET+byteCodop.length-1,j = 0; j < byteDataTam.length; j++,i++){
+		for(int i = OFFSET+byteCodop.length,j = 0; j < byteDataTam.length; j++,i++){
 			solCliente[i] = byteDataTam[j];
 		}
 		/* insert data*/
-		for(int i = OFFSET+byteCodop.length+byteDataTam.length-1, j = 0; j < byteData.length; j++, i++){
+		for(int i = OFFSET+byteCodop.length+byteDataTam.length, j = 0; j < byteData.length; j++, i++){
 			solCliente[i] = byteData[j];
 		}
 		return solCliente;
@@ -61,14 +61,26 @@ public class ProcesoCliente extends Proceso{
 		byte[] byteDataTam = new byte[BYTES_IN_SHORT],
 			   byteData = new byte[data.length - (BYTES_IN_SHORT - OFFSET)];
 		/* extract dataTam (short) */
-		for(int i = OFFSET-1, j = 0; j < byteDataTam.length; j++, i++){
+		for(int i = OFFSET + BYTES_IN_SHORT, j = 0; j < BYTES_IN_SHORT;  i++, j++){
 			byteDataTam[j] = data[i];
 		}
 		dataTam = ToShort(byteDataTam);
-		for(int i = OFFSET + byteDataTam.length -1, j = 0; j < dataTam; i++, j++){
-			byteData[j] = data[i];
+		if(dataTam > 0){
+			for(int i = OFFSET + (BYTES_IN_SHORT*2), j = 0; j < dataTam; i++, j++){
+				byteData[j] = data[i];
+			}
+			dataStr = new String(byteData);
 		}
-		dataStr = new String(byteData);
+		else{
+			/* errores del servidor */
+			if(dataTam == -1){
+				dataStr = "Error: Adress unknown";
+			}
+			else{
+				/* TODO: Implementar más errores */
+				dataStr = "Error: Desconocido...";
+			}
+		}
 		return dataStr;
 	}
 	

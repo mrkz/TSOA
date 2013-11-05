@@ -201,10 +201,6 @@ public class ProcesoServidor extends Proceso{
 		for(int i = OFFSET+(BYTES_IN_SHORT*2), j = 0; j < data.length; i++, j++){
 			newPackage[i] = data[j];
 		}
-		System.out.print("ProcesServidor.java: Paquete a enviar por el servidor: ");
-		for(int i = 0; i < newPackage.length; i++){
-			System.out.print("["+newPackage[i]+"]");
-		}
 		return newPackage;
 	}
 	

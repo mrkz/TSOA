@@ -84,6 +84,7 @@ public final class MicroNucleo extends MicroNucleoBase{
 			sendDatagamPacket(tablaEmision.get(new Integer(dest)).getIp(),
 											   message);
 			imprimeln("Enviando mensaje a IP="+tablaEmision.get(new Integer(dest)).getIp()+" ID="+tablaEmision.get(new Integer(dest)));
+			tablaEmision.remove(dest);
 		}
 		else{
 			/* se toman desde la interfaz */

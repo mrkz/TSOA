@@ -84,6 +84,8 @@ public final class MicroNucleo extends MicroNucleoBase{
 			sendDatagamPacket(tablaEmision.get(new Integer(dest)).getIp(),
 											   message);
 			imprimeln("Enviando mensaje a IP="+tablaEmision.get(new Integer(dest)).getIp()+" ID="+tablaEmision.get(new Integer(dest)));
+			System.out.println("MicroNucleo.java: Enviando mensaje a IP="+tablaEmision.get(new Integer(dest)).getIp()+" ID="+tablaEmision.get(new Integer(dest)));
+			System.out.println("MicroNucleo.java: desde: "+super.dameIdProceso());
 			tablaEmision.remove(dest);
 		}
 		else{
@@ -92,6 +94,8 @@ public final class MicroNucleo extends MicroNucleoBase{
 			message = fillAddress(pmp.dameID(), message);
 			sendDatagamPacket(pmp.dameIP(), message);
 			imprimeln("Enviando mensaje a IP="+pmp.dameIP()+" ID="+pmp.dameID());
+			System.out.println("MicroNucleo.java: Enviando mensaje a IP="+pmp.dameIP()+" ID="+pmp.dameID());
+			System.out.println("MicroNucleo.java: desde: "+super.dameIdProceso());
 		}
 		//suspenderProceso();   //esta invocacion depende de si se requiere bloquear al hilo de control invocador
 		
@@ -146,6 +150,7 @@ public final class MicroNucleo extends MicroNucleoBase{
 				sleep(1000);
 				System.arraycopy(dp.getData(), 0, origin , 0, 4); 
 				System.arraycopy(dp.getData(), 4, destiny, 0, 4);
+				System.out.println("MicroNucleojava: origen:"+bytesToInt(origin)+" destino: "+bytesToInt(destiny));
 				ipSource = dp.getAddress().getHostAddress();
 				
 				tablaEmision.put(new Integer(bytesToInt(origin)), 

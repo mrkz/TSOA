@@ -9,46 +9,97 @@ import sistemaDistribuido.util.Escribano;
  */
 public class ProcesoCliente extends Proceso{
 	private Libreria lib;
+	
+	/**
+	 * Atributos agregados para práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín.
+	 */
+	private int[] sumatoriaArgs, multiplicatoriaArgs;
+	private int divisor, dividendo, abs;
+				  
 
 	/**
 	 * 
 	 */
 	public ProcesoCliente(Escribano esc){
 		super(esc);
-		lib=new LibreriaServidor(esc);  //primero debe funcionar con esta para subrutina servidor local
-		//lib=new LibreriaCliente(esc);  //luego con esta comentando la anterior, para subrutina servidor remota
+		//lib=new LibreriaServidor(esc);  //primero debe funcionar con esta para subrutina servidor local
+		lib=new LibreriaCliente(esc);  //luego con esta comentando la anterior, para subrutina servidor remota
 		start();
 	}
+	
+	public void setSumatoriaArgs(int[] args){
+		sumatoriaArgs = args;
+	}
+	
+	public void setMultiplicatoriaArgs(int[] args){
+		multiplicatoriaArgs = args;
+	}
+	
+	public void setDivisionArgs(int dividendo, int divisor){
+		this.divisor   = divisor;
+		this.dividendo = dividendo;
+	}
+	
+	public void setAbsoluto(int val){
+		abs = val;
+	}
+	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
+	public int sumatoria(int len, int[] array){
+		return lib.sumatoria(len, array);
+	}
+	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
+	public int multiplicatoria(int len, int[] array){
+		return lib.multiplicatoria(len, array);
+	}
+	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
+	public int division(int dividendo, int divisor){
+		return lib.division(dividendo, divisor);
+	}
+	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
+	public int absoluto(int val){
+		return lib.absoluto(val);
+	}
+	
 
 	/**
 	 * Programa Cliente
 	 */
 	public void run(){
-		int sum1,sum2,minuendo,sustraendo,multiplicando,multiplicador,dividendo,divisor;
-
-		sum1=8;
-		sum2=7;
-		minuendo=6;
-		sustraendo=5;
-		multiplicando=4;
-		multiplicador=4;
-		dividendo=2;
-		divisor=1;
-
+		int resultado;
+		
 		imprimeln("Proceso cliente en ejecucion.");
 		imprimeln("Esperando datos para continuar.");
 		Nucleo.suspenderProceso();
 		imprimeln("Salio de suspenderProceso");
-
-		int resultado;
-		resultado=lib.suma(sum1,sum2);
-		imprimeln("suma="+resultado);
-		resultado=lib.resta(minuendo,sustraendo);
-		imprimeln("diferencia="+resultado);
-		resultado=lib.multiplicacion(multiplicando,multiplicador);
-		imprimeln("multiplicacion="+resultado);
-		resultado=lib.division(dividendo,divisor);
-		imprimeln("cociente="+resultado);
+		
+		resultado = lib.sumatoria(sumatoriaArgs.length, sumatoriaArgs);
+		imprimeln("sumatoria = "+resultado);
+		
+		resultado = lib.multiplicatoria(multiplicatoriaArgs.length, multiplicatoriaArgs);
+		imprimeln("multiplicatoria = "+resultado);
+		
+		resultado = lib.division(dividendo, divisor);
+		imprimeln("division = "+resultado);
+		
+		resultado = lib.absoluto(abs);
+		imprimeln("Absoluto = "+resultado);
 
 		imprimeln("Fin del cliente.");
 	}

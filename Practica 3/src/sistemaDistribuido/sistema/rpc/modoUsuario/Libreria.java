@@ -41,17 +41,6 @@ public abstract class Libreria{
 	protected void imprimeln(String s){
 		esc.imprimeln(s);
 	}
-
-	/**
-	 * Ejemplo para el paso intermedio de parametros en pila.
-	 * Esto es lo que esta disponible como interfaz al usuario programador
-	 */
-	/*public int suma(int sum1,int sum2){
-    //...
-    suma();
-    //...
-    return 0;
-  }*/
 	
 	/*
 	 * Agregado práctica 3
@@ -74,7 +63,6 @@ public abstract class Libreria{
 		parameters.push(new Integer(len));
 		sumatoria();
 		return parameters.pop().intValue();
-		//return 0;
 	}
 	
 	/*
@@ -91,6 +79,10 @@ public abstract class Libreria{
 		return parameters.pop().intValue();
 	}
 	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	public int division(int dividendo,int divisor){
 		parameters.push(new Integer(divisor));
 		parameters.push(new Integer(dividendo));
@@ -99,6 +91,10 @@ public abstract class Libreria{
 		return parameters.pop().intValue();
 	}
 	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	public int absoluto(int val) {
 		parameters.push(new Integer(val));
 		parameters.push(new Integer(1));
@@ -158,7 +154,10 @@ public abstract class Libreria{
 		byteArray[1] = (byte) data;
 		return byteArray;
 	}
-	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	public short byteArrayToShort(byte[] array){
 		short bytesValue = 0x0;
 		bytesValue = (short)((array[1]      & 0x00FF) | 
@@ -166,9 +165,4 @@ public abstract class Libreria{
 		return bytesValue;
 	}
 
-	/**
-	 * Servidor suma verdadera generable por un compilador estandar
-	 * o resguardo de la misma por un compilador de resguardos.
-	 */
-	protected abstract void suma();
 }

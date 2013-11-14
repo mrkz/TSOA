@@ -27,7 +27,11 @@ public class LibreriaCliente extends Libreria{
 		Nucleo.send(asaDest,null);
 		//...
 	}
-
+	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	@Override
 	protected void sumatoria() {
 		int ans = 0;
@@ -41,7 +45,11 @@ public class LibreriaCliente extends Libreria{
 		parameters.push(new Integer(ans));
 		
 	}
-
+	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	@Override
 	protected void multiplicatoria() {
 		int ans = 0;
@@ -56,6 +64,10 @@ public class LibreriaCliente extends Libreria{
 		
 	}
 
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	@Override
 	protected void absoluto() {
 		int ans = 0;
@@ -70,6 +82,10 @@ public class LibreriaCliente extends Libreria{
 		
 	}
 
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	@Override
 	protected void division() {
 		int ans = 0;
@@ -84,6 +100,11 @@ public class LibreriaCliente extends Libreria{
 		
 	}
 	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 * Método para sacar elementos de la pila
+	 */
 	public int[] popArray(){
 		int [] array = new int[parameters.size()];
 		for(int i = 0 ; i  < array.length; i++){
@@ -92,12 +113,20 @@ public class LibreriaCliente extends Libreria{
 		return array;
 	}
 	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	public int[] intToIntArray(int a){
 		int[] array = new int[1];
 		array[0] = a;
 		return array;
 	}
 	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	public byte[] arrayIntToArrayBytes(int[] array){
 		byte[] arrayBytes = new byte[array.length * BYTES_IN_INT];
 		byte[] byteInt;
@@ -110,6 +139,10 @@ public class LibreriaCliente extends Libreria{
 		return arrayBytes;
 	}
 	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	private int unpackageAnswer(byte[] data){
 		int answerFromSolServidor = 0;
 		byte[] byteAnswer = new byte[BYTES_IN_INT];
@@ -120,6 +153,9 @@ public class LibreriaCliente extends Libreria{
 	
 	
 	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 * 
 	 * package
 	 * [4 source][4 destiny][2 codop][[2 data length] data]
 	 */

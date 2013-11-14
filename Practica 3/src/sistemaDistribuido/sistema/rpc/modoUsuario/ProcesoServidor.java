@@ -49,6 +49,10 @@ public class ProcesoServidor extends Proceso{
 		//RPC.deregistrarInterfaz(nombreServidor, version, idUnico)  //para pr�ctica 4
 	}
 
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	private byte[] procesaLlamada(byte[] message) {
 		short codop;
 		int res;
@@ -84,11 +88,14 @@ public class ProcesoServidor extends Proceso{
 		return answer;
 	}
 	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 * Package structure:
+	 *  [4 origin][4 destiny][2 codop][[2 (short) data size] data]
+	 */
 	private byte[] packageAnswer(int res) {
-		/*
-		 * Package structure:
-		 * [4 origin][4 destiny][2 codop][[2 (short) data size] data]
-		 */
+		
 		byte[] answer = new byte[OFFSET + (BYTES_IN_SHORT*2) + BYTES_IN_INT],
 			   byteAns = new byte[BYTES_IN_INT],
 			   byteAnsSize = new byte[BYTES_IN_SHORT];
@@ -107,6 +114,10 @@ public class ProcesoServidor extends Proceso{
 		return answer;
 	}
 
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	public int[] byteArrayToIntArray(byte[] array){
 		short nParameters;
 		byte [] byteNParameters = new byte[BYTES_IN_SHORT];
@@ -125,6 +136,10 @@ public class ProcesoServidor extends Proceso{
 		return intArray;
 	}
 	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	public int[] unpackageArray(byte[] message){
 		byte[] data = new byte[message.length - (OFFSET + BYTES_IN_SHORT)];
 		int [] dataInt, toReturn;
@@ -133,9 +148,12 @@ public class ProcesoServidor extends Proceso{
 		toReturn = new int[dataInt.length - 1];
 		System.arraycopy(dataInt, 1, toReturn, 0, dataInt.length-1);
 		return toReturn;
-		//return dataInt;
 	}
 	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	private int byteArrayToInt(byte[] intBytes) {
 		int bytesValue = 0x0;
 		bytesValue = (int)( (intBytes[3]       & 0x000000FF) | 
@@ -145,6 +163,10 @@ public class ProcesoServidor extends Proceso{
 		return bytesValue;
 	}
 	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	public short byteArrayToShort(byte[] array){
 		short bytesValue = 0x0;
 		bytesValue = (short)((array[1]      & 0x00FF) | 

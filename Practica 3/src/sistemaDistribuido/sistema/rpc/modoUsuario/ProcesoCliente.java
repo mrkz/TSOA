@@ -28,19 +28,35 @@ public class ProcesoCliente extends Proceso{
 		start();
 	}
 	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	public void setSumatoriaArgs(int[] args){
 		sumatoriaArgs = args;
 	}
 	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	public void setMultiplicatoriaArgs(int[] args){
 		multiplicatoriaArgs = args;
 	}
 	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	public void setDivisionArgs(int dividendo, int divisor){
 		this.divisor   = divisor;
 		this.dividendo = dividendo;
 	}
 	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	public void setAbsoluto(int val){
 		abs = val;
 	}
@@ -78,8 +94,9 @@ public class ProcesoCliente extends Proceso{
 	}
 	
 
-	/**
-	 * Programa Cliente
+	/*
+	 * Modificado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
 	 */
 	public void run(){
 		int resultado;

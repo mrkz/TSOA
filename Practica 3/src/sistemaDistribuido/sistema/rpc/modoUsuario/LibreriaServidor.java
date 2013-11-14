@@ -12,15 +12,10 @@ public class LibreriaServidor extends Libreria{
 		super(esc);
 	}
 
-	/**
-	 * Ejemplo de servidor suma verdadera
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
 	 */
-	protected void suma(){
-		//saca parametros de pila
-
-		//devuelve valor izquierdo
-	}
-
 	@Override
 	protected void sumatoria() {
 		int[] values = popArray();
@@ -31,6 +26,10 @@ public class LibreriaServidor extends Libreria{
 		parameters.push(new Integer(res));
 	}
 
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	@Override
 	protected void multiplicatoria() {
 		int[] values = popArray();
@@ -41,6 +40,10 @@ public class LibreriaServidor extends Libreria{
 		parameters.push(new Integer(res));
 	}
 
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	@Override
 	protected void division() {
 		int [] values = popArray();
@@ -52,6 +55,10 @@ public class LibreriaServidor extends Libreria{
 		
 	}
 	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 */
 	@Override
 	protected void absoluto() {
 		int [] values = popArray();
@@ -66,6 +73,11 @@ public class LibreriaServidor extends Libreria{
 		
 	}
 	
+	/*
+	 * Agregado práctica 3
+	 * Simental Magaña Marcos Eleno Joaquín
+	 * Método para sacar elementos de la pila
+	 */
 	private int[] popArray(){
 		int nParameters = parameters.pop().intValue();
 		int[] array = new int[nParameters];

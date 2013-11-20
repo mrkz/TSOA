@@ -1,5 +1,6 @@
 package sistemaDistribuido.sistema.rpc.modoUsuario;
 
+import sistemaDistribuido.sistema.clienteServidor.modoMonitor.ParMaquinaProceso;
 import sistemaDistribuido.visual.rpc.DespleganteConexiones;
 import java.util.Hashtable;
 import java.util.Set;
@@ -7,7 +8,7 @@ import java.util.Iterator;
 
 public class ProgramaConector{
 	private DespleganteConexiones desplegante;
-	private Hashtable<Object,Object> conexiones;   //las llaves que provee DespleganteConexiones
+	private Hashtable<Integer,Object> conexiones;   //las llaves que provee DespleganteConexiones
 
 	/**
 	 * 
@@ -20,15 +21,15 @@ public class ProgramaConector{
 	 * Inicializar tablas en programa conector
 	 */
 	public void inicializar(){
-		conexiones=new Hashtable<Object,Object>();
+		conexiones=new Hashtable<Integer,Object>();
 	}
 
 	/**
 	 * Remueve tuplas visualizadas en la interfaz gr�fica registradas en tabla conexiones
 	 */
 	private void removerConexiones(){
-		Set<Object> s=conexiones.keySet();
-		Iterator<Object> i=s.iterator();
+		Set<Integer> s=conexiones.keySet();
+		Iterator<Integer> i=s.iterator();
 		while(i.hasNext()){
 			desplegante.removerServidor(((Integer)i.next()).intValue());
 			i.remove();
@@ -41,5 +42,40 @@ public class ProgramaConector{
 	public void terminar() {
 		removerConexiones();
 		desplegante.finalizar();
+	}
+
+	public int registro(String nombreServidor, String version,
+						 ParMaquinaProceso asa) {
+		DataOfServer newServer = new DataOfServer(nombreServidor, version);
+		int idUnica = desplegante.agregarServidor(nombreServidor, version, asa.dameIP(), Integer.toString(asa.dameID()));
+		conexiones.put(new Integer(idUnica), newServer);
+		return idUnica;
+		
+	}
+}
+
+
+class DataOfServer{
+	
+	private String hostname, version;
+	public DataOfServer(String hostname, String version){
+		this.hostname = hostname;
+		this.version = version;
+	}
+	
+	public void setName(String newName){
+		hostname = newName;
+	}
+	
+	public void setVersion(String newVersion){
+		version = newVersion;
+	}
+	
+	public String getServerName(){
+		return hostname;
+	}
+	
+	public String getServerVersion(){
+		return version;
 	}
 }

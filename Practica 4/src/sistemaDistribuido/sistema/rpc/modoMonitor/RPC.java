@@ -1,6 +1,6 @@
 package sistemaDistribuido.sistema.rpc.modoMonitor;
 
-//import sistemaDistribuido.sistema.clienteServidor.modoMonitor.Nucleo;   //para práctica 4
+import sistemaDistribuido.sistema.clienteServidor.modoMonitor.Nucleo;   //para prï¿½ctica 4
 import sistemaDistribuido.sistema.clienteServidor.modoMonitor.ParMaquinaProceso;
 import sistemaDistribuido.sistema.rpc.modoUsuario.ProgramaConector;
 
@@ -29,8 +29,7 @@ public class RPC{
 	 * Regresa una identificacionUnica para el deregistro.
 	 */
 	public static int exportarInterfaz(String nombreServidor,String version,ParMaquinaProceso asa){
-		//conector.registro(nombreServidor,version,asa);
-		return 0;
+		return conector.registro(nombreServidor,version,asa);
 	}
 
 	/**

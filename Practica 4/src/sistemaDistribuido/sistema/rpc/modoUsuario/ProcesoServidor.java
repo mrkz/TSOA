@@ -1,6 +1,6 @@
 package sistemaDistribuido.sistema.rpc.modoUsuario;
 
-//import sistemaDistribuido.sistema.rpc.modoMonitor.RPC;   //para pr�ctica 4
+	import sistemaDistribuido.sistema.rpc.modoMonitor.RPC;   //para pr�ctica 4
 import sistemaDistribuido.sistema.clienteServidor.modoMonitor.Nucleo;
 import sistemaDistribuido.sistema.clienteServidor.modoUsuario.Proceso;
 import sistemaDistribuido.util.Escribano;
@@ -27,7 +27,7 @@ public class ProcesoServidor extends Proceso{
 
 	/**
 	 * Resguardo del servidor
-	 * Modificado práctica 3
+	 * Modificado práctica 4: agrega exportación de interfaz
 	 * Simental Magaña Marcos Eleno Joaquín
 	 */
 	public void run(){
@@ -36,7 +36,7 @@ public class ProcesoServidor extends Proceso{
 		byte[] bytesDestiny = new byte[BYTES_IN_INT];
 		int destiny;
 		imprimeln("Proceso servidor en ejecucion.");
-		//idUnico=RPC.exportarInterfaz("FileServer", "3.1", asa)  //para pr�ctica 4
+		idUnico=RPC.exportarInterfaz("Kepler", "3.1", asa)  //para pr�ctica 4
 
 		while(continuar()){
 			Nucleo.receive(dameID(),message);

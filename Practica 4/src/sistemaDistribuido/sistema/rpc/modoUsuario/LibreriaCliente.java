@@ -2,6 +2,7 @@ package sistemaDistribuido.sistema.rpc.modoUsuario;
 
 //import sistemaDistribuido.sistema.rpc.modoMonitor.RPC;  //para pr�ctica 4
 import sistemaDistribuido.sistema.clienteServidor.modoMonitor.Nucleo;
+import sistemaDistribuido.sistema.rpc.modoMonitor.RPC;
 import sistemaDistribuido.sistema.rpc.modoUsuario.Libreria;
 import sistemaDistribuido.util.Escribano;
 
@@ -11,91 +12,127 @@ public class LibreriaCliente extends Libreria{
 	 * 
 	 */
 	protected static final int MAX_BUFFER = 1024;
+	// Agregado P4 Simental Magaña Marcos
+	public static final String NAMESERVER = "KEPLER",
+							   VERSION = "3.1";
+	public static final int RPC_ERROR = -99999;
 	
 	public LibreriaCliente(Escribano esc){
 		super(esc);
 	}
-
-	/**
-	 * Ejemplo de resguardo del cliente suma
-	 */
-	protected void suma(){
-		int asaDest=0;
-		//...
-
-		//asaDest=RPC.importarInterfaz(nombreServidor, version)  //para pr�ctica 4
-		Nucleo.send(asaDest,null);
-		//...
-	}
 	
 	/*
 	 * Agregado práctica 3
+	 * Modificado práctica 4
 	 * Simental Magaña Marcos Eleno Joaquín
 	 */
 	@Override
 	protected void sumatoria() {
 		int ans = 0;
-		byte[] respServidor = new byte[MAX_BUFFER];
-		byte[] data = packageData(SUMATORIA, arrayIntToArrayBytes(popArray()));
-		byte[] byteOrigin = new byte[BYTES_IN_INT];
-		Nucleo.send(248, data);
-		System.arraycopy(data, 0, byteOrigin, 0, BYTES_IN_INT);
-		Nucleo.receive(Nucleo.dameIdProceso(), respServidor);
-		ans = unpackageAnswer(respServidor);
+		int asaDest;
+		asaDest = RPC.importarInterfaz(NAMESERVER, VERSION);
+		if(asaDest != RPC_ERROR){
+			imprimeln("Preparando mensaje para Sumatoria");
+			byte[] respServidor = new byte[MAX_BUFFER];
+			byte[] data = packageData(SUMATORIA, arrayIntToArrayBytes(popArray()));
+			byte[] byteOrigin = new byte[BYTES_IN_INT];
+			imprimeln("Enviando mensaje");
+			Nucleo.send(asaDest, data);
+			System.arraycopy(data, 0, byteOrigin, 0, BYTES_IN_INT);
+			Nucleo.receive(Nucleo.dameIdProceso(), respServidor);
+			imprimeln("Recibiendo mensaje");
+			ans = unpackageAnswer(respServidor);
+		}
+		else{
+			ans =  RPC_ERROR;
+		}
 		parameters.push(new Integer(ans));
 		
 	}
 	
 	/*
 	 * Agregado práctica 3
+	 * Modificado práctica 4
 	 * Simental Magaña Marcos Eleno Joaquín
 	 */
 	@Override
 	protected void multiplicatoria() {
 		int ans = 0;
-		byte[] respServidor = new byte[MAX_BUFFER];
-		byte[] data = packageData(MULTIPLICATORIA, arrayIntToArrayBytes(popArray()));
-		byte[] byteOrigin = new byte[BYTES_IN_INT];
-		Nucleo.send(248, data);
-		System.arraycopy(data, 0, byteOrigin, 0, BYTES_IN_INT);
-		Nucleo.receive(Nucleo.dameIdProceso(), respServidor);
-		ans = unpackageAnswer(respServidor);
+		int asaDest;
+		asaDest = RPC.importarInterfaz(NAMESERVER, VERSION);
+		if(asaDest != RPC_ERROR){
+			imprimeln("Preparando mensaje para Multiplicatoria");
+			byte[] respServidor = new byte[MAX_BUFFER];
+			byte[] data = packageData(MULTIPLICATORIA, arrayIntToArrayBytes(popArray()));
+			byte[] byteOrigin = new byte[BYTES_IN_INT];
+			imprimeln("Enviando mensaje");
+			Nucleo.send(asaDest, data);
+			System.arraycopy(data, 0, byteOrigin, 0, BYTES_IN_INT);
+			Nucleo.receive(Nucleo.dameIdProceso(), respServidor);
+			imprimeln("Recibiendo mensaje");
+			ans = unpackageAnswer(respServidor);
+		}
+		else{
+			ans = RPC_ERROR;
+		}
 		parameters.push(new Integer(ans));
 		
 	}
 
 	/*
 	 * Agregado práctica 3
+	 * Modificado práctica 4
 	 * Simental Magaña Marcos Eleno Joaquín
 	 */
 	@Override
 	protected void absoluto() {
 		int ans = 0;
-		byte[] respServidor = new byte[MAX_BUFFER];
-		byte[] data = packageData(ABSOLUTO, arrayIntToArrayBytes(popArray()));
-		byte[] byteOrigin = new byte[BYTES_IN_INT];
-		Nucleo.send(248, data);
-		System.arraycopy(data, 0, byteOrigin, 0, BYTES_IN_INT);
-		Nucleo.receive(Nucleo.dameIdProceso(), respServidor);
-		ans = unpackageAnswer(respServidor);
+		int asaDest;
+		asaDest = RPC.importarInterfaz(NAMESERVER, VERSION);
+		if(asaDest != RPC_ERROR){
+			imprimeln("Preparando mensaje para Absoluto");
+			byte[] respServidor = new byte[MAX_BUFFER];
+			byte[] data = packageData(ABSOLUTO, arrayIntToArrayBytes(popArray()));
+			byte[] byteOrigin = new byte[BYTES_IN_INT];
+			imprimeln("Enviando mensaje");
+			Nucleo.send(asaDest, data);
+			System.arraycopy(data, 0, byteOrigin, 0, BYTES_IN_INT);
+			Nucleo.receive(Nucleo.dameIdProceso(), respServidor);
+			imprimeln("Recibiendo mensaje");
+			ans = unpackageAnswer(respServidor);
+		}
+		else{
+			ans = RPC_ERROR;
+		}
 		parameters.push(new Integer(ans));
 		
 	}
 
 	/*
 	 * Agregado práctica 3
+	 * Modificado práctica 4
 	 * Simental Magaña Marcos Eleno Joaquín
 	 */
 	@Override
 	protected void division() {
 		int ans = 0;
-		byte[] respServidor = new byte[MAX_BUFFER];
-		byte[] data = packageData(DIVISION, arrayIntToArrayBytes(popArray()));
-		byte[] byteOrigin = new byte[BYTES_IN_INT];
-		Nucleo.send(248, data);
-		System.arraycopy(data, 0, byteOrigin, 0, BYTES_IN_INT);
-		Nucleo.receive(Nucleo.dameIdProceso(), respServidor);
-		ans = unpackageAnswer(respServidor);
+		int asaDest;
+		asaDest = RPC.importarInterfaz(NAMESERVER, VERSION);
+		if(asaDest != RPC_ERROR){
+			byte[] respServidor = new byte[MAX_BUFFER];
+			imprimeln("Preparando mensaje para Division");
+			byte[] data = packageData(DIVISION, arrayIntToArrayBytes(popArray()));
+			byte[] byteOrigin = new byte[BYTES_IN_INT];
+			imprimeln("Enviando mensaje");
+			Nucleo.send(asaDest, data);
+			System.arraycopy(data, 0, byteOrigin, 0, BYTES_IN_INT);
+			Nucleo.receive(Nucleo.dameIdProceso(), respServidor);
+			imprimeln("Recibiendo mensaje");
+			ans = unpackageAnswer(respServidor);
+		}
+		else{
+			ans = RPC_ERROR;
+		}
 		parameters.push(new Integer(ans));
 		
 	}
@@ -144,6 +181,7 @@ public class LibreriaCliente extends Libreria{
 	 * Simental Magaña Marcos Eleno Joaquín
 	 */
 	private int unpackageAnswer(byte[] data){
+		imprimeln("Desempaquetando respuesta");
 		int answerFromSolServidor = 0;
 		byte[] byteAnswer = new byte[BYTES_IN_INT];
 		System.arraycopy(data, OFFSET + (BYTES_IN_SHORT * 2), byteAnswer, 0, BYTES_IN_INT);

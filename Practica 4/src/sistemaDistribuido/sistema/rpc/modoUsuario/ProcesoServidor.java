@@ -1,6 +1,8 @@
 package sistemaDistribuido.sistema.rpc.modoUsuario;
 
-	import sistemaDistribuido.sistema.rpc.modoMonitor.RPC;   //para pr�ctica 4
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import sistemaDistribuido.sistema.rpc.modoMonitor.RPC;   //para pr�ctica 4
 import sistemaDistribuido.sistema.clienteServidor.modoMonitor.Nucleo;
 import sistemaDistribuido.sistema.clienteServidor.modoUsuario.Proceso;
 import sistemaDistribuido.util.Escribano;
@@ -15,6 +17,9 @@ public class ProcesoServidor extends Proceso{
 			  				  DIVISION = 2,
 			  				  ABSOLUTO = 3;
 	public static final int BYTES_IN_INT = 4;
+	// Agregado P4 Simental Magaña Marcos
+	public static final String NAMESERVER = "KEPLER",
+							   VERSION = "3.1";
 
 	/**
 	 * 
@@ -28,6 +33,7 @@ public class ProcesoServidor extends Proceso{
 	/**
 	 * Resguardo del servidor
 	 * Modificado práctica 4: agrega exportación de interfaz
+	 *  Se agrega try/catch para servidor que se cierra sin atender solicitud
 	 * Simental Magaña Marcos Eleno Joaquín
 	 */
 	public void run(){
@@ -35,18 +41,40 @@ public class ProcesoServidor extends Proceso{
 		byte[] respServidor;
 		byte[] bytesDestiny = new byte[BYTES_IN_INT];
 		int destiny;
+		int idUnico; // Agregado P4 Simental Magaña Marcos
 		imprimeln("Proceso servidor en ejecucion.");
-		idUnico=RPC.exportarInterfaz("Kepler", "3.1", asa)  //para pr�ctica 4
+		imprimeln("Registrando servidor...");
+		Asa asa = null;
+		try {
+			asa = new Asa(Nucleo.dameIdProceso(), InetAddress.getLocalHost().getHostAddress());
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}		
+		idUnico = RPC.exportarInterfaz(NAMESERVER, VERSION, asa);  //para pr�ctica 4
+		imprimeln("Servidor registrado.");
 
 		while(continuar()){
-			Nucleo.receive(dameID(),message);
-			System.arraycopy(message, 0, bytesDestiny, 0, BYTES_IN_INT);
-			destiny = byteArrayToInt(bytesDestiny);
-			respServidor = procesaLlamada(message);
-			Nucleo.send( destiny, respServidor);
+			try{
+				Nucleo.receive(dameID(),message);
+				imprimeln("Recibiendo mensaje");
+				System.arraycopy(message, 0, bytesDestiny, 0, BYTES_IN_INT);
+				destiny = byteArrayToInt(bytesDestiny);
+				respServidor = procesaLlamada(message);
+				imprimeln("Enviando  Respuesta");
+				Nucleo.send( destiny, respServidor);
+				
+			}
+			catch (NegativeArraySizeException e){
+				/* No se proceso ninguna llamada del servidor */
+			}
 		}
 
-		//RPC.deregistrarInterfaz(nombreServidor, version, idUnico)  //para pr�ctica 4
+		if(RPC.deregistrarInterfaz(NAMESERVER, VERSION, idUnico)){  //para pr�ctica 4
+			imprimeln("Servidor desregistrado");
+		}
+		else{
+			imprimeln("No se pudo desregistrar servidor");
+		}
 	}
 
 	/*
@@ -61,23 +89,28 @@ public class ProcesoServidor extends Proceso{
 				answer = packageAnswer(0); // default package with zeros
 		System.arraycopy(message, OFFSET, codopBytes, 0, BYTES_IN_SHORT);
 		codop = byteArrayToShort(codopBytes);
+		imprimeln("Desempaquetando mensaje");
 		switch(codop){
 		case SUMATORIA:
+			imprimeln("Realizando servicio de Sumatoria");
 			parameters = unpackageArray(message);
 			res = ls.sumatoria(parameters.length, parameters);
 			answer = packageAnswer(res);
 			break;
 		case MULTIPLICATORIA:
+			imprimeln("Realizando servicio de Multiplicatoria");
 			parameters = unpackageArray(message);
 			res = ls.multiplicatoria(parameters.length, parameters);
 			answer = packageAnswer(res);
 			break;
 		case DIVISION:
+			imprimeln("Realizando servicio de Division");
 			parameters = unpackageArray(message);
 			res = ls.division(parameters[0], parameters[1]);
 			answer = packageAnswer(res);
 			break;
 		case ABSOLUTO:
+			imprimeln("Realizando servicio de Absoluto");
 			parameters = unpackageArray(message);
 			res = ls.absoluto(parameters[0]);
 			answer = packageAnswer(res);
@@ -85,6 +118,7 @@ public class ProcesoServidor extends Proceso{
 		default:
 			break;
 		}
+		imprimeln("Empaquetando respuesta");
 		return answer;
 	}
 	
@@ -95,7 +129,6 @@ public class ProcesoServidor extends Proceso{
 	 *  [4 origin][4 destiny][2 codop][[2 (short) data size] data]
 	 */
 	private byte[] packageAnswer(int res) {
-		
 		byte[] answer = new byte[OFFSET + (BYTES_IN_SHORT*2) + BYTES_IN_INT],
 			   byteAns = new byte[BYTES_IN_INT],
 			   byteAnsSize = new byte[BYTES_IN_SHORT];

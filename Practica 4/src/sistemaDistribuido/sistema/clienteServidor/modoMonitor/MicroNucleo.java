@@ -8,6 +8,7 @@ import java.util.Hashtable;
 
 import sistemaDistribuido.sistema.clienteServidor.modoMonitor.MicroNucleoBase;
 import sistemaDistribuido.sistema.clienteServidor.modoUsuario.Proceso;
+import sistemaDistribuido.sistema.rpc.modoUsuario.Asa;
 
 /**
  * 
@@ -152,9 +153,8 @@ public final class MicroNucleo extends MicroNucleoBase{
 				System.arraycopy(dp.getData(), 4, destiny, 0, 4);
 				System.out.println("MicroNucleojava: origen:"+bytesToInt(origin)+" destino: "+bytesToInt(destiny));
 				ipSource = dp.getAddress().getHostAddress();
-				
-				tablaEmision.put(new Integer(bytesToInt(origin)), 
-								 new InfoProceso(bytesToInt(origin), ipSource));
+				tablaEmision.put(new Integer(bytesToInt(origin)),
+									   new InfoProceso(bytesToInt(origin), ipSource));
 				destinyProcess = dameProcesoLocal(bytesToInt(destiny));
 				if(destinyProcess == null){
 					byte[] error = new byte[BYTES_IN_SHORT];
@@ -289,6 +289,15 @@ public final class MicroNucleo extends MicroNucleoBase{
 		return byteArray;
 	}
 	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * para práctica 4
+	 * Se agrega Método para registrar en Tabla de Emision
+	 */
+	public void registraEnTablaEmision(Asa asa){
+		InfoProceso infoproceso = new InfoProceso(asa.dameID(), asa.dameIP());
+		tablaEmision.put(new Integer(infoproceso.getId()), infoproceso);
+	}
 }
 
 /**

@@ -61,6 +61,7 @@ public abstract class Libreria{
 			parameters.push(new Integer(array[i]));
 		}
 		parameters.push(new Integer(len));
+		imprimeln("Llamando al resguardo sumatoria");
 		sumatoria();
 		return parameters.pop().intValue();
 	}
@@ -75,6 +76,7 @@ public abstract class Libreria{
 			parameters.push(new Integer(array[i]));
 		}
 		parameters.push(new Integer(len));
+		imprimeln("Llamando al resguardo multipliatoria");
 		multiplicatoria();
 		return parameters.pop().intValue();
 	}
@@ -87,6 +89,7 @@ public abstract class Libreria{
 		parameters.push(new Integer(divisor));
 		parameters.push(new Integer(dividendo));
 		parameters.push(new Integer(2));
+		imprimeln("Llamando al resguardo division");
 		division();
 		return parameters.pop().intValue();
 	}
@@ -98,6 +101,7 @@ public abstract class Libreria{
 	public int absoluto(int val) {
 		parameters.push(new Integer(val));
 		parameters.push(new Integer(1));
+		imprimeln("Llamando al resguardo absoluto");
 		absoluto();
 		return parameters.pop().intValue();
 	}

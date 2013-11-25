@@ -231,13 +231,16 @@ public class ProcesoServidor extends Proceso{
 	}
 
 	/**
-	 * 
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Para práctica 5
+	 * Se agrega solicitud de buzón
 	 */
 	public void run(){
 		imprimeln("Inicio de Proceso servidor.");
 		byte[] solServidor=new byte[MAX_BUFFER];
 		byte[] respServidor; //1024
 		int origin;
+		Nucleo.nucleo.dameBuzonNuevo(dameID());
 		while(continuar()){
 			imprimeln("Invocando a Receive.");
 			Nucleo.receive(dameID(),solServidor);

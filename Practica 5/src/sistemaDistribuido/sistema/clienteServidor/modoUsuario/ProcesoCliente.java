@@ -116,9 +116,9 @@ public class ProcesoCliente extends Proceso{
 		Nucleo.send(248,solCliente); //esta no se mueve
 		imprimeln("Invocando a Receive.");
 		Nucleo.receive(dameID(),respCliente); // esta tampoco
-		imprimeln("Procesando respuesta recibida del servidor");
+		imprimeln("Procesando respuesta recibida");
 		dato=unpackageData(respCliente);
-		imprimeln("Respuesta del servidor: "+dato);
+		imprimeln("Respuesta recibida: "+dato);
 				// aquí termina el codigo
 	}
 }

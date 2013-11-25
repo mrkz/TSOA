@@ -18,23 +18,32 @@ public final class MicroNucleo extends MicroNucleoBase{
 	
 	/**
 	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * 
 	 * Para práctica 2
 	 * Atributo tablaEmision agregado
 	 * Atributo tablaRecepcion agregado
 	 * Atributo BYTES_IN_SHORT agregado
+	 * 
+	 * para práctica 5
+	 * Atributo tablaBuzones agregado
 	 */
 	private Hashtable<Integer, InfoProceso> tablaEmision;
 	private Hashtable<Integer, byte[]> tablaRecepcion;
 	protected static final int BYTES_IN_SHORT = 2;
+	private Hashtable<Integer, Buzon> tablaBuzones;
 
 	/**
 	 * Edited: Simental Magaña Marcos Eleno Joaquín
 	 * Para práctica 2
 	 * Se agrega inicialización de tablaEmision
+	 * 
+	 * Para práctica 5
+	 * Se agrega inicialización de tablaBuzones
 	 */
 	private MicroNucleo(){
 		tablaEmision = new Hashtable<Integer, InfoProceso>();
 		tablaRecepcion = new Hashtable<Integer, byte[]>();
+		tablaBuzones = new Hashtable<Integer, Buzon>();
 	}
 
 	/**
@@ -104,14 +113,33 @@ public final class MicroNucleo extends MicroNucleoBase{
 
 	/**
 	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * 
 	 * Para práctica 2
 	 * Se modifica el funcionamiento de receiveVerdadero,
 	 * se registra id del proceso convocante y arreglo de
 	 * bytes donde se almacenan datos
+	 * 
+	 * Para práctica 5
+	 * Se añade tratamiento con buzones
 	 */
 	protected void receiveVerdadero(int addr,byte[] message){
-		tablaRecepcion.put(new Integer(addr), message);
-		suspenderProceso();
+		Buzon miBuzon;
+		byte[] msgPtr;
+		miBuzon = dameMiBuzon(dameIdProceso());
+		if(miBuzon == null){ // es un cliente
+			tablaRecepcion.put(new Integer(addr), message);
+			suspenderProceso();
+		}
+		else{	// es un servidor
+			if(miBuzon.isEmpty()){
+				tablaRecepcion.put(new Integer(addr), message);
+				suspenderProceso();
+			}
+			else{
+				msgPtr = miBuzon.getNextMessage();
+				System.arraycopy(msgPtr, 0, message, 0, msgPtr.length);
+			}
+		}
 	}
 
 	/**
@@ -136,6 +164,9 @@ public final class MicroNucleo extends MicroNucleoBase{
 	 * Edited: Simental Magaña Marcos Eleno Joaquín
 	 * Para práctica 2
 	 * Se modifica el funcionamiento de run
+	 * 
+	 * Para práctica 5
+	 * Se añade implementación de buzones
 	 */
 	public void run(){
 		byte[]  message = new byte[1024],
@@ -297,6 +328,33 @@ public final class MicroNucleo extends MicroNucleoBase{
 	public void registraEnTablaEmision(Asa asa){
 		InfoProceso infoproceso = new InfoProceso(asa.dameID(), asa.dameIP());
 		tablaEmision.put(new Integer(infoproceso.getId()), infoproceso);
+	}
+	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Para práctica 5
+	 * Se agrega Método para solicitar un buzón nuevo
+	 * por parte de un proceso
+	 */
+	public void dameBuzonNuevo(int idProceso){
+		Buzon nuevoBuzon = new Buzon();
+		tablaBuzones.put(new Integer(idProceso), nuevoBuzon);
+	}
+	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Para práctica 5
+	 * Se agrega Método para solicitar el buzon perteneciente
+	 * del proceso, si proceso no tiene buzon, regresa null
+	 */
+	private Buzon dameMiBuzon(int idProceso){
+		Buzon miBuzon = null;
+		Integer key = new Integer(idProceso);
+		System.out.println("MicroNucleo.java: Proceso "+idProceso+" solicita buzón: "+tablaBuzones.containsKey(key));
+		if(tablaBuzones.containsKey(key)){
+			miBuzon = tablaBuzones.get(key);
+		}
+		return miBuzon;
 	}
 }
 

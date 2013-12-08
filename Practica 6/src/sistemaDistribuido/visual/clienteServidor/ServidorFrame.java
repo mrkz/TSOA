@@ -15,19 +15,20 @@ public class ServidorFrame extends ProcesoFrame{
   private ProcesoServidor proc;
   private TextField fTiempoActual, fValorH, fTiempoEstProp, fValorI;
   private Button botonInicio;
-  private int  tiempoActual, valorH, tiempoEstProp, valorI;
 
   public ServidorFrame(MicroNucleoFrame frameNucleo){
     super(frameNucleo,"Servidor de Tiempo");
-    add("South",construirCamposServidor());
+    Panel panelServidor = construirCamposServidor();
+    add("South",panelServidor);
     setSize(600, 300);
     proc=new ProcesoServidor(this);
+    proc.setParentFrame(this);
     fijarProceso(proc);
   }
 
   private Panel construirCamposServidor() {
 	Panel panelPrincipal = new Panel();
-	fTiempoActual = new TextField(5);
+	fTiempoActual = new TextField(9);
 	panelPrincipal.add(new Label("Tiempo actual:"));
 	panelPrincipal.add(fTiempoActual);
 	fValorH = new TextField(5);
@@ -45,29 +46,33 @@ public class ServidorFrame extends ProcesoFrame{
 	return panelPrincipal;
   }
   
+  public void setTiempoActualGUI(int newVal){
+	  fTiempoActual.setText(""+newVal);
+  }
+  
   class ManejadorBoton implements ActionListener{
 		
 		public void actionPerformed(ActionEvent e) {
 			String com=e.getActionCommand();
 			if (com.equals("Iniciar")){
 				try {
-					tiempoActual = Integer.parseInt(fTiempoActual.getText());
-					valorH = Integer.parseInt(fValorH.getText());
-					tiempoEstProp = Integer.parseInt(fTiempoEstProp.getText());
-					valorI = Integer.parseInt(fValorI.getText());
+					proc.setTiempoActual(Integer.parseInt(fTiempoActual.getText()));
+					proc.setValorH(Integer.parseInt(fValorH.getText()));
+					proc.setTiempoEstProp(Integer.parseInt(fTiempoEstProp.getText()));
+					proc.setValorI(Integer.parseInt(fValorI.getText()));
 				} catch (NumberFormatException e1) {
 					System.out.println("Uno o más campos vacíos, colocando valores por defecto...");
-					tiempoActual = 0;
-					valorH = 10;
-					tiempoEstProp = 0;
-					valorI = 0;
+					proc.setTiempoActual(0);
+					proc.setValorH(10);
+					proc.setTiempoEstProp(0);
+					proc.setValorI(0);
 				}
 				botonInicio.setEnabled(false);
 				imprimeln("======================================");
-				imprimeln("Tiempo Actual: "+tiempoActual);
-				imprimeln("H: "+valorH);
-				imprimeln("Tiempo Estimado de Propagacion: "+tiempoEstProp);
-				imprimeln("I: "+valorI);
+				imprimeln("Tiempo Actual: "+proc.getTiempoActual());
+				imprimeln("H: "+proc.getValorH());
+				imprimeln("Tiempo Estimado de Propagacion: "+proc.getTiempoEstProp());
+				imprimeln("I: "+proc.getValorI());
 				imprimeln("======================================");
 				proc.start();
 			}

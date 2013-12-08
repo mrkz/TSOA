@@ -1,95 +1,143 @@
 package sistemaDistribuido.sistema.relojes;
 
+
 import sistemaDistribuido.sistema.clienteServidor.modoMonitor.Nucleo;
-import sistemaDistribuido.sistema.clienteServidor.modoUsuario.Proceso;
+import sistemaDistribuido.sistema.relojes.Proceso;
 import sistemaDistribuido.util.Escribano;
 import sistemaDistribuido.util.Pausador;
+import sistemaDistribuido.visual.clienteServidor.ServidorFrame;
 
 /**
  * 
  */
 public class ProcesoServidor extends Proceso{
 
-	/**
-	 * 
-	 */
+	
+	private int  tiempoActual, valorH, tiempoEstProp, valorI;
+	private static final int VALORSEGUNDOS = 1000, valorN = 100;
+	ServidorFrame parent;
+	
 	public ProcesoServidor(Escribano esc){
 		super(esc);
 	}
-
 	
-	/**
-	 * Edited: Simental Magaña Marcos Eleno Joaquín
-	 * Método para empaquetar respuesa que dará el servidor
-	 * entrada:	byte[]	arreglo de bytes de la respuesta que el servidor entregará [data]
-	 * salida:	byte[]  paquete de respuesta [OFFSET dataTAM data]
-	 */
-	private byte[] packageData(byte[] data){
-		short dataTam = (short) data.length;
-		byte[] byteDataTam = toByte(dataTam);
-		byte[] newPackage = new byte[OFFSET+(BYTES_IN_SHORT*2)+dataTam];
-
-		for(int i = 0; i < OFFSET; i++){
-			newPackage[i] = 0;
-		}
-		/* insert dataTam (short) */
-		for(int i = OFFSET+BYTES_IN_SHORT, j = 0; j < byteDataTam.length; i++,j++){
-			newPackage[i] = byteDataTam[j];
-		}
-		/* insert data (data.length bytes) */
-		for(int i = OFFSET+(BYTES_IN_SHORT*2), j = 0; j < data.length; i++, j++){
-			newPackage[i] = data[j];
-		}
-		return newPackage;
+	public void setParentFrame(ServidorFrame parent){
+		this.parent = parent;
 	}
 	
-	/**
-	 * Edited: Simental Magaña Marcos Eleno Joaquín
-	 * Para práctica 2
-	 * Se agrega método para obtener dirección de origen de mensaje
-	 * para regresar respuesta del servidor
-	 */
-	private int getOrigin(byte[] solServidor){
-		byte[] origin = new byte[4];
-		System.arraycopy(solServidor, 0, origin, 0, 4);
-		return bytesToInt(origin);
+	public void setTiempoActual(int newVal){
+		tiempoActual = newVal;
+		parent.setTiempoActualGUI(tiempoActual);
 	}
 	
-	/**
-	 * Edited: Simental Magaña Marcos Eleno Joaquín
-	 * Para práctica 2
-	 * Se agrega método para convertir direccion de origen a entero
-	 */
-	private int bytesToInt(byte[] array){
-		int bytesValue = 0x0;
-		bytesValue = (int)( (array[3]       & 0x000000FF) | 
-							(array[2] << 8  & 0x0000FF00) | 
-							(array[1] << 16 & 0x00FF0000) | 
-							(array[0] << 24 & 0xFF000000));
-		return bytesValue;
+	public int getTiempoActual(){
+		return tiempoActual;
 	}
+	
+	public void setValorH(int newVal){
+		 valorH = newVal;
+	}
+	
+	public int getValorH(){
+		return valorH;
+	}
+	
+	public void setTiempoEstProp(int newVal){
+		 tiempoEstProp = newVal;
+	}
+	
+	public int getTiempoEstProp(){
+		return tiempoEstProp;
+	}
+	
+	public void setValorI(int newVal){
+		 valorI = newVal;
+	}
+	
+	public int getValorI(){
+		return valorI;
+	}
+	
 
 	/**
 	 * 
 	 */
 	public void run(){
+		byte[] solicitudAlServidor = new byte[MAX_BUFFER];
+		
 		imprimeln("Inicio de Proceso servidor.");
-		byte[] solServidor=new byte[MAX_BUFFER];
-		byte[] respServidor; //1024
-		int origin;
+		new ActualizadorDeTiempo().start();
 		while(continuar()){
-/*			imprimeln("Invocando a Receive.");
-			Nucleo.receive(dameID(),solServidor);
+			imprimeln("Invocando a Receive.");
+			Nucleo.receive(dameID(),solicitudAlServidor);
 			imprimeln("Procesando petición recibida del cliente");
-			respServidor = procesaLlamada(solServidor);
-			imprimeln("Generando mensaje a ser enviado, llenando los campos necesarios");
-			respServidor = packageData(respServidor);
-			Pausador.pausa(1000);  //sin esta línea es posible que Servidor solicite send antes que Cliente solicite receive
-			imprimeln("Señalamiento al núcleo para envío de mensaje");
-			origin = getOrigin(solServidor);
-			System.out.println("El origen del paquete es: "+origin);
-			Nucleo.send(origin,respServidor);
-*/
+			new HiloTrabajador(solicitudAlServidor).start();
 		}
+	}
+	
+	class HiloTrabajador extends Thread{
+
+		byte[] solicitud = new byte[MAX_BUFFER];
+		public HiloTrabajador(byte[] sol){
+			System.arraycopy(sol, 0, solicitud, 0, sol.length);
+		}
+		/**
+		 * Edited: Simental Magaña Marcos Eleno Joaquín
+		 * Método para empaquetar respuesa que dará el hilo trabajador del servidor
+		 * entrada:	vacío
+		 * salida:	byte[]  paquete de respuesta [OFFSET tiempoActual ValorI]
+		 */
+		private byte[] packageData(){
+			
+			byte[] newPackage = new byte[OFFSET + TAM_HORA + TAM_I];
+			byte[] bytesTiempoActual = intToByteArray(getTiempoActual()),
+				   bytesValorI = intToByteArray(valorI);
+			System.arraycopy(bytesTiempoActual, 0, newPackage, OFFSET, TAM_HORA);
+			System.arraycopy(bytesValorI, 0, newPackage, OFFSET+TAM_HORA, TAM_I);
+			System.out.println("HiloTrabajador: packageData: Este es el paquete nuevo: ");
+			for(int i = 0; i < newPackage.length; i++){
+				System.out.print("["+newPackage[i]+"]");
+			}
+			System.out.println();
+			return newPackage;
+		}
+		
+		@Override
+		public void run() {
+			int origin;
+			byte[] respuesta;
+			imprimeln("Generando mensaje a ser enviado, llenando los campos necesarios");
+			respuesta = packageData();
+			Pausador.pausa(1000);  //sin esta línea es posible que Servidor solicite send antes que Cliente solicite receive
+			origin = getOrigin(solicitud);
+			System.out.println("HiloTrabajador: run: enviando mensaje a: "+origin);
+			imprimeln("Simulando tiempo estimado de Propagación");
+			try {
+				sleep(getTiempoEstProp());
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			imprimeln("Señalamiento al núcleo para envío de mensaje");
+			Nucleo.send(origin,respuesta);
+		}
+		
+	}
+	
+	class ActualizadorDeTiempo extends Thread{
+
+		@Override
+		public void run() {
+			try{
+				while(true){
+					sleep(VALORSEGUNDOS/valorH);
+					setTiempoActual(getTiempoActual()+valorN);
+				}
+			}
+			catch (InterruptedException e1){
+				e1.printStackTrace();
+			}
+			
+		}
+		
 	}
 }

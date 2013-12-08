@@ -1,7 +1,7 @@
 package sistemaDistribuido.visual.rpc;
 
-import sistemaDistribuido.sistema.clienteServidor.modoMonitor.Nucleo;
-import sistemaDistribuido.sistema.rpc.modoUsuario.ProcesoCliente;
+//import sistemaDistribuido.sistema.clienteServidor.modoMonitor.Nucleo;
+//import sistemaDistribuido.sistema.rpc.modoUsuario.ProcesoCliente;
 import sistemaDistribuido.visual.clienteServidor.ProcesoFrame;
 import java.awt.Panel;
 import java.awt.TextField;
@@ -13,7 +13,7 @@ import java.awt.event.ActionEvent;
 
 public class ClienteFrame extends ProcesoFrame{
 	private static final long serialVersionUID=1;
-	private ProcesoCliente proc;
+	//private ProcesoCliente proc;
 	private TextField campo1,campo2,campo3,campo4;
 	private Button botonSolicitud;
 
@@ -21,8 +21,8 @@ public class ClienteFrame extends ProcesoFrame{
 		super(frameNucleo,"Cliente de Archivos");
 		add("South",construirPanelSolicitud());
 		validate();
-		proc=new ProcesoCliente(this);
-		fijarProceso(proc);
+		//proc=new ProcesoCliente(this);
+		//fijarProceso(proc);
 	}
 
 	public Panel construirPanelSolicitud(){
@@ -74,7 +74,7 @@ public class ClienteFrame extends ProcesoFrame{
 			if (com.equals("Solicitar")){
 				botonSolicitud.setEnabled(false);
 				//...
-				Nucleo.reanudarProceso(proc);
+				//Nucleo.reanudarProceso(proc);
 			}
 		}
 	}

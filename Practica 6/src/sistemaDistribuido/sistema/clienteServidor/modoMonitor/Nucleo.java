@@ -1,7 +1,8 @@
 package sistemaDistribuido.sistema.clienteServidor.modoMonitor;
 
 import sistemaDistribuido.sistema.clienteServidor.modoMonitor.ParMaquinaProceso;
-import sistemaDistribuido.sistema.relojes.Proceso;
+//import sistemaDistribuido.sistema.relojes.Proceso;
+import sistemaDistribuido.sistema.clienteServidor.modoUsuario.Proceso;
 import sistemaDistribuido.util.Escribano;
 import microKernelBasedSystem.system.clientServer.userMode.threadPackage.SystemThread;
 

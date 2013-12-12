@@ -2,9 +2,8 @@ package sistemaDistribuido.sistema.relojes;
 
 
 import sistemaDistribuido.sistema.clienteServidor.modoMonitor.Nucleo;
-import sistemaDistribuido.sistema.relojes.Proceso;
+import sistemaDistribuido.sistema.clienteServidor.modoUsuario.Proceso;
 import sistemaDistribuido.util.Escribano;
-import sistemaDistribuido.util.Pausador;
 import sistemaDistribuido.visual.clienteServidor.ServidorFrame;
 
 /**
@@ -94,11 +93,6 @@ public class ProcesoServidor extends Proceso{
 				   bytesValorI = intToByteArray(valorI);
 			System.arraycopy(bytesTiempoActual, 0, newPackage, OFFSET, TAM_HORA);
 			System.arraycopy(bytesValorI, 0, newPackage, OFFSET+TAM_HORA, TAM_I);
-			System.out.println("HiloTrabajador: packageData: Este es el paquete nuevo: ");
-			for(int i = 0; i < newPackage.length; i++){
-				System.out.print("["+newPackage[i]+"]");
-			}
-			System.out.println();
 			return newPackage;
 		}
 		
@@ -108,9 +102,7 @@ public class ProcesoServidor extends Proceso{
 			byte[] respuesta;
 			imprimeln("Generando mensaje a ser enviado, llenando los campos necesarios");
 			respuesta = packageData();
-			Pausador.pausa(1000);  //sin esta línea es posible que Servidor solicite send antes que Cliente solicite receive
 			origin = getOrigin(solicitud);
-			System.out.println("HiloTrabajador: run: enviando mensaje a: "+origin);
 			imprimeln("Simulando tiempo estimado de Propagación");
 			try {
 				sleep(getTiempoEstProp());

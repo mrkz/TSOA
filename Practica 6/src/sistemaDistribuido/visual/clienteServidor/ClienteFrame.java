@@ -1,7 +1,6 @@
 package sistemaDistribuido.visual.clienteServidor;
 
-import sistemaDistribuido.sistema.clienteServidor.modoMonitor.Nucleo;
-import sistemaDistribuido.sistema.clienteServidor.modoUsuario.ProcesoCliente;
+import sistemaDistribuido.sistema.relojes.ProcesoCliente;
 import sistemaDistribuido.visual.clienteServidor.MicroNucleoFrame;
 import sistemaDistribuido.visual.clienteServidor.ProcesoFrame;
 import java.awt.Label;
@@ -15,52 +14,115 @@ import java.awt.event.ActionEvent;
 public class ClienteFrame extends ProcesoFrame{
 	private static final long serialVersionUID=1;
 	private ProcesoCliente proc;
-	private Choice codigosOperacion;
-	private TextField campoMensaje;
-	private Button botonSolicitud;
-	private String codop1,codop2,codop3,codop4;
+	private Choice velocidadReloj;
+	private TextField fTiempoActual, fValorH, fDistMaxReloj, fTasaMaxAlej, fDelta2Ro, fValorN;
+	private Button botonInicio;
+	private static final int LENTO = 0, PERFECTO = 1, RAPIDO = 2;
 
 	public ClienteFrame(MicroNucleoFrame frameNucleo){
-		super(frameNucleo,"Cliente de Archivos");
-		add("South",construirPanelSolicitud());
+		super(frameNucleo,"Cliente");
+		add("South",construirCamposCliente());
+		identificador.add(new Label("d/2p"));
+		fDelta2Ro = new TextField(5);
+		fDelta2Ro.setEditable(false);
+		identificador.add(fDelta2Ro);
+		identificador.add(new Label("N"));
+		fValorN = new TextField(5);
+		fValorN.setEditable(false);
+		identificador.add(fValorN);
+		
+		
+		setSize(750, 300);
 		validate();
-		proc=new ProcesoCliente(this);
+		proc = new ProcesoCliente(this);
+		proc.setParentFrame(this);
 		fijarProceso(proc);
 	}
+	
+	public void setDelta2Ro(int newVal){
+		fDelta2Ro.setText(""+newVal);
+	}
+	
+	public void setValorN(int newVal){
+		fValorN.setText(""+newVal);
+	}
 
-	public Panel construirPanelSolicitud(){
-		Panel p=new Panel();
-		codigosOperacion=new Choice();
-		codop1="Crear";
-		codop2="Eliminar";
-		codop3="Leer";
-		codop4="Escribir";
-		codigosOperacion.add(codop1);
-		codigosOperacion.add(codop2);
-		codigosOperacion.add(codop3);
-		codigosOperacion.add(codop4);
-		campoMensaje=new TextField(10);
-		botonSolicitud=new Button("Solicitar");
-		botonSolicitud.addActionListener(new ManejadorSolicitud());
-		p.add(new Label("Operacion:"));
-		p.add(codigosOperacion);
-		p.add(new Label("Datos:"));
-		p.add(campoMensaje);
-		p.add(botonSolicitud);
-		return p;
+	public Panel construirCamposCliente(){
+		Panel panelPrincipal = new Panel();
+		
+		panelPrincipal.add(new Label("Vel"));
+		velocidadReloj = new Choice();
+		velocidadReloj.add("Lento");
+		velocidadReloj.add("Perfecto");
+		velocidadReloj.add("Rápido");
+		panelPrincipal.add(velocidadReloj);
+		
+		panelPrincipal.add(new Label("Tiempo Inicial"));
+		fTiempoActual = new TextField(9);
+		panelPrincipal.add(fTiempoActual);
+		
+		panelPrincipal.add(new Label("H"));
+		fValorH = new TextField(5);
+		panelPrincipal.add(fValorH);
+		
+		panelPrincipal.add(new Label("DisMaxReloj"));
+		fDistMaxReloj = new TextField(5);
+		panelPrincipal.add(fDistMaxReloj);
+		
+		panelPrincipal.add(new Label("TasaMaxAlej"));
+		fTasaMaxAlej = new TextField(5);
+		panelPrincipal.add(fTasaMaxAlej);
+		
+		botonInicio = new Button("Solicitar");
+		botonInicio.addActionListener(new ManejadorSolicitud());
+		panelPrincipal.add(botonInicio);
+		
+		/*fTiempoActual, fValorH, fDistMaxReloj, fTipoReloj, fTasaMaxAlej;*/
+		return panelPrincipal;
+	}
+	
+	public void setTiempoActual(int newVal){
+		fTiempoActual.setText(""+newVal);
 	}
 
 	class ManejadorSolicitud implements ActionListener{
 		
 		public void actionPerformed(ActionEvent e) {
-			String com=e.getActionCommand();
+			String com = e.getActionCommand();
 			if (com.equals("Solicitar")){
-				botonSolicitud.setEnabled(false);
-				com=codigosOperacion.getSelectedItem();
-				//imprimeln("Solicitud a enviar: "+com);
-				//imprimeln("Mensaje a enviar: "+campoMensaje.getText());
-				proc.setData((short)codigosOperacion.getSelectedIndex(), campoMensaje.getText());
-				Nucleo.reanudarProceso(proc);
+				botonInicio.setEnabled(false);
+				velocidadReloj.setEnabled(false);
+				if(velocidadReloj.getSelectedIndex() == LENTO)
+					proc.setTipoReloj(LENTO);
+				else if(velocidadReloj.getSelectedIndex() == RAPIDO)
+					proc.setTipoReloj(RAPIDO);
+				else
+					proc.setTipoReloj(PERFECTO);
+				try{
+					proc.setTiempoActual(Integer.parseInt(fTiempoActual.getText()));
+					proc.setValorH(Integer.parseInt(fValorH.getText()));
+					proc.setDistMaxReloj(Integer.parseInt(fDistMaxReloj.getText()));
+					proc.setTasaMaxAlej(Float.parseFloat(fTasaMaxAlej.getText()));
+				}
+				catch (NumberFormatException e1){
+					imprimeln("Campos vacios... Llenando con parametros predeterminados");
+					proc.setTiempoActual(0);
+					proc.setValorH(10);
+					proc.setDistMaxReloj(25000);
+					proc.setTasaMaxAlej((float)0.2);
+				}
+				imprimeln("======================================");
+				imprimeln("Tiempo Actual: "+proc.getTiempoActual());
+				imprimeln("H: "+proc.getValorH());
+				imprimeln("Distorsion maxima de reloj: "+proc.getDistMaxReloj());
+				imprimeln("Tasa maxima de alejamiento: "+proc.getTasaMaxAlej());
+				imprimeln("======================================");
+				proc.start();
+				
+			}
+			else{
+				System.out.println("Botón desconocido...");
+				System.exit(ERROR);
 			}
 		}
 	}

@@ -1,7 +1,8 @@
 package sistemaDistribuido.visual.clienteServidor;
 
 import sistemaDistribuido.sistema.clienteServidor.modoMonitor.Nucleo;
-import sistemaDistribuido.sistema.relojes.Proceso;
+//import sistemaDistribuido.sistema.relojes.Proceso;
+import sistemaDistribuido.sistema.clienteServidor.modoUsuario.Proceso;
 import sistemaDistribuido.util.Escribano;
 import sistemaDistribuido.visual.clienteServidor.MicroNucleoFrame;
 import sistemaDistribuido.visual.util.PanelInformador;

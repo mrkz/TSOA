@@ -210,7 +210,7 @@ public class ProcesoServidor extends Proceso{
 	 * Se agrega método para obtener dirección de origen de mensaje
 	 * para regresar respuesta del servidor
 	 */
-	private int getOrigin(byte[] solServidor){
+	public int getOrigin(byte[] solServidor){
 		byte[] origin = new byte[4];
 		System.arraycopy(solServidor, 0, origin, 0, 4);
 		return bytesToInt(origin);
@@ -221,7 +221,7 @@ public class ProcesoServidor extends Proceso{
 	 * Para práctica 2
 	 * Se agrega método para convertir direccion de origen a entero
 	 */
-	private int bytesToInt(byte[] array){
+	public int bytesToInt(byte[] array){
 		int bytesValue = 0x0;
 		bytesValue = (int)( (array[3]       & 0x000000FF) | 
 							(array[2] << 8  & 0x0000FF00) | 

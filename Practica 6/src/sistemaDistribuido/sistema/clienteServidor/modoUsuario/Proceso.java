@@ -16,9 +16,8 @@ public abstract class Proceso extends SystemProcess{
 	 * Edited: Simental Magaña Marcos Eleno Joaquín
 	 * Atributos BYTES_IN_SHORT, MAX_BUFFER y OFFSET agregados.
 	 */
-	protected static final int BYTES_IN_SHORT = 2;
-	protected static final int MAX_BUFFER = 1024;
-	protected static final int OFFSET = 8;
+	protected static final int BYTES_IN_SHORT = 2, MAX_BUFFER = 1024,
+							   OFFSET = 8, TAM_HORA = 4, TAM_I = 4;
 	/**
 	 * 
 	 */
@@ -51,6 +50,54 @@ public abstract class Proceso extends SystemProcess{
 							 (array[0] << 8 & 0xFF00));
 		return bytesValue;
 	}
+	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * para práctica 6
+	 * Método para obtener el origen del mensaje recibido
+	 * entrada: byte[]
+	 * salida: int
+	 * 
+	 */
+	protected int getOrigin(byte[] solServidor){
+		byte[] origin = new byte[4];
+		System.arraycopy(solServidor, 0, origin, 0, 4);
+		return bytesToInt(origin);
+	}
+	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Para práctica 6
+	 * Método para convertir direccion de origen a entero
+	 * entrada: byte[]
+	 * salida: int
+	 */
+	protected int bytesToInt(byte[] array){
+		int bytesValue = 0x0;
+		bytesValue = (int)( (array[3]       & 0x000000FF) | 
+							(array[2] << 8  & 0x0000FF00) | 
+							(array[1] << 16 & 0x00FF0000) | 
+							(array[0] << 24 & 0xFF000000));
+		return bytesValue;
+	}
+	
+	/**
+	 * Edited: Simental Magaña Marcos Eleno Joaquín
+	 * Para práctica 6
+	 * Método para convertir entero a byte[]
+	 * entrada: int
+	 * salida: byte[]
+	 */
+	protected byte[] intToByteArray(int data){
+		byte[] byteArray = new byte[4];
+		/* saved from most to less significant */
+		for(int i = 3; i >= 0; i--){
+			byteArray[i] = (byte) data; 
+			data >>= 8;
+		}
+		return byteArray;
+	}
+	
 
 	/**
 	 * Solo para compatibilidad con versiones 2007B y anteriores, no necesario de 2008A en adelante

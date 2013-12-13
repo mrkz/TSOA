@@ -16,8 +16,15 @@ public abstract class Proceso extends SystemProcess{
 	 * Edited: Simental Magaña Marcos Eleno Joaquín
 	 * Atributos BYTES_IN_SHORT, MAX_BUFFER y OFFSET agregados.
 	 */
-	protected static final int BYTES_IN_SHORT = 2, MAX_BUFFER = 1024,
+	protected static final int BYTES_IN_SHORT = 2, BYTES_IN_INT = 4, MAX_BUFFER = 1024,
 							   OFFSET = 8, TAM_HORA = 4, TAM_I = 4;
+	protected static final short RECURSO_OK = 1000, RECURSO_OCUPADO = -1000,
+								 ESPERO_RECURSO = 1111,
+			 				     SOLICITUD_ARCHIVO = 101, SOLICITUD_PUERTO = 201,
+			 				     SOLICITUD_IMPRESORA = 301, SOLICITUD_MEMORIA = 401,
+			 				     LIBERA_ARCHIVO = -101, LIBERA_PUERTO = -201,
+			 				     LIBERA_IMPRESORA = -301, LIBERA_MEMORIA = -401;
+	protected static final short ARCHIVO = 0, PUERTO = 1, IMPRESORA = 2, MEMORIA = 3;
 	/**
 	 * 
 	 */

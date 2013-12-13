@@ -16,6 +16,7 @@ import microKernelBasedSystem.util.Writer;
 
 public class ProcesoFrame extends Frame implements WindowListener,Escribano{
 	private static final long serialVersionUID=1;
+	protected static final short ARCHIVO = 0, PUERTO = 1, IMPRESORA = 2, MEMORIA = 3;
 	private Proceso proc;
 	private MicroNucleoFrame frameNucleo;
 	private WriterManager writerMan=new WriterManager(this);

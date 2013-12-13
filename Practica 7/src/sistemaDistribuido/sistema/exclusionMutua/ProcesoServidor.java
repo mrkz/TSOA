@@ -15,7 +15,6 @@ public class ProcesoServidor extends Proceso{
 	
 	private LinkedList<byte[]> colaArchivo, colaPuerto, colaImpresora, colaMemoria;
 	private boolean archivoOcupado, puertoOcupado, impresoraOcupada, memoriaOcupada;
-	private static final short ARCHIVO = 0, PUERTO = 1, IMPRESORA = 2, MEMORIA = 3;
 	
 	public ProcesoServidor(Escribano esc){
 		super(esc);
@@ -72,11 +71,14 @@ public class ProcesoServidor extends Proceso{
 		int destino = getOrigin(solicitud);
 		byte[] respuesta;
 		switch(tipoSol){
+		case ESPERO_RECURSO: break;
 		case SOLICITUD_ARCHIVO:
 			if(!archivoOcupado){
 				tomaRecurso(ARCHIVO);
 				respuesta = generaPaquete(RECURSO_OK);
 			}else{
+				imprimeln("recurso ARCHIVO ocupado");
+				imprimeln("Encolando solicitud de recurso ARCHIVO");
 				encolaSolicitud(ARCHIVO, solicitud);
 				respuesta = generaPaquete(RECURSO_OCUPADO);
 			}
@@ -87,6 +89,8 @@ public class ProcesoServidor extends Proceso{
 				tomaRecurso(IMPRESORA);
 				respuesta = generaPaquete(RECURSO_OK);
 			}else{
+				imprimeln("recurso IMPRESORA ocupado");
+				imprimeln("Encolando solicitud de recurso IMPRESORA");
 				encolaSolicitud(IMPRESORA, solicitud);
 				respuesta = generaPaquete(RECURSO_OCUPADO);
 			}
@@ -97,6 +101,8 @@ public class ProcesoServidor extends Proceso{
 				tomaRecurso(MEMORIA);
 				respuesta = generaPaquete(RECURSO_OK);
 			}else{
+				imprimeln("recurso MEMORIA ocupado");
+				imprimeln("Encolando solicitud de recurso MEMORIA");
 				encolaSolicitud(MEMORIA, solicitud);
 				respuesta = generaPaquete(RECURSO_OCUPADO);
 			}
@@ -107,6 +113,8 @@ public class ProcesoServidor extends Proceso{
 				tomaRecurso(PUERTO);
 				respuesta = generaPaquete(RECURSO_OK);
 			}else{
+				imprimeln("recurso PUERTO ocupado");
+				imprimeln("Encolando solicitud de recurso PUERTO");
 				encolaSolicitud(PUERTO, solicitud);
 				respuesta = generaPaquete(RECURSO_OCUPADO);
 			}
@@ -115,8 +123,8 @@ public class ProcesoServidor extends Proceso{
 		case LIBERA_ARCHIVO:
 			if(colaArchivo.size() > 0){
 				destino = getOrigin(colaArchivo.poll());
-				enviaPaquete(destino, generaPaquete(RECURSO_OK));
 				imprimeln("Se libero recurso ARCHIVO, fue tomado por proceso "+destino);
+				enviaPaquete(destino, generaPaquete(RECURSO_OK));
 			}else{
 				liberaRecurso(ARCHIVO);
 			}
@@ -124,8 +132,8 @@ public class ProcesoServidor extends Proceso{
 		case LIBERA_IMPRESORA:
 			if(colaImpresora.size() > 0){
 				destino = getOrigin(colaImpresora.poll());
-				enviaPaquete(destino, generaPaquete(RECURSO_OK));
 				imprimeln("Se libero recurso IMPRESORA, fue tomado por proceso "+destino);
+				enviaPaquete(destino, generaPaquete(RECURSO_OK));
 			}else{
 				liberaRecurso(IMPRESORA);
 			}
@@ -133,8 +141,8 @@ public class ProcesoServidor extends Proceso{
 		case LIBERA_MEMORIA:
 			if(colaMemoria.size() > 0){
 				destino = getOrigin(colaMemoria.poll());
-				enviaPaquete(destino, generaPaquete(RECURSO_OK));
 				imprimeln("Se libero recurso MEMORIA, fue tomado por proceso "+destino);
+				enviaPaquete(destino, generaPaquete(RECURSO_OK));
 			}else{
 				liberaRecurso(MEMORIA);
 			}
@@ -142,8 +150,8 @@ public class ProcesoServidor extends Proceso{
 		case LIBERA_PUERTO:
 			if(colaPuerto.size() > 0){
 				destino = getOrigin(colaPuerto.poll());
-				enviaPaquete(destino, generaPaquete(RECURSO_OK));
 				imprimeln("Se libero recurso PUERTO, fue tomado por proceso "+destino);
+				enviaPaquete(destino, generaPaquete(RECURSO_OK));
 			}else{
 				liberaRecurso(PUERTO);
 			}
@@ -153,6 +161,7 @@ public class ProcesoServidor extends Proceso{
 	
 	private void enviaPaquete(int destino, byte[] paquete){
 		imprimeln("Señalamiento al núcleo para envío de mensaje");
+		System.out.println("Enviando paquete a proceso "+destino);
 		Nucleo.send(destino, paquete);
 	}
 	
@@ -165,35 +174,45 @@ public class ProcesoServidor extends Proceso{
 	}
 	
 	private void tomaRecurso(short recurso){
+		imprime("Entregando recurso ");
 		switch(recurso){
 		case IMPRESORA:
 			impresoraOcupada = true;
+			imprimeln("IMPRESORA");
 			break;
 		case ARCHIVO:
 			archivoOcupado = true;
+			imprimeln("ARCHIVO");
 			break;
 		case MEMORIA:
 			memoriaOcupada = true;
+			imprimeln("MEMORIA");
 			break;
 		case PUERTO:
 			puertoOcupado = true;
+			imprimeln("PUERTO");
 			break;
 		}
 	}
 	
 	private void liberaRecurso(short recurso){
+		imprime("Liberando recurso ");
 		switch(recurso){
 		case IMPRESORA:
 			impresoraOcupada = false;
+			imprimeln("IMPRESORA");
 			break;
 		case ARCHIVO:
 			archivoOcupado = false;
+			imprimeln("ARCHIVO");
 			break;
 		case MEMORIA:
 			memoriaOcupada = false;
+			imprimeln("MEMORIA");
 			break;
 		case PUERTO:
 			puertoOcupado = false;
+			imprimeln("PUERTO");
 			break;
 		}
 	}
